@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>War Room — Pandora Team</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,700&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#06080F; --s1:#0D1120; --s2:#131929; --s3:#1A2235; --s4:#1F293F;
+  --p:#1B3A6B; --p2:#2756A8; --p3:#5B9BD5; --p4:#A8CBF0;
+  --d:#7A5810; --d2:#B8881A; --d3:#D4A843; --d4:#EFD080;
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.12);
+  --text:#DDE6F0; --muted:#5A7090; --muted2:#7A90A8;
+  --accent:#4FC3F7; --gold:#F4C430;
+  --green:#16A34A; --green2:#22C55E; --green3:#86EFAC;
+  --yellow:#D97706; --yellow2:#F59E0B; --yellow3:#FCD34D;
+  --red:#B91C1C; --red2:#EF4444; --red3:#FCA5A5;
+  --r1:#e74c3c; --r2:#f39c12; --r3:#27ae60;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ─── ANIMATED BACKGROUND ─── */
+.bg-canvas{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.bg-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.18;animation:drift 20s ease-in-out infinite alternate}
+.bg-orb:nth-child(1){width:600px;height:400px;background:var(--p);top:-100px;left:-150px;animation-duration:18s}
+.bg-orb:nth-child(2){width:500px;height:350px;background:var(--d);bottom:-100px;right:-100px;animation-duration:22s;animation-direction:alternate-reverse}
+.bg-orb:nth-child(3){width:300px;height:300px;background:rgba(79,195,247,.4);top:40%;left:40%;animation-duration:15s}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(40px,30px) scale(1.1)}}
+
+/* ─── TOPBAR ─── */
+.topbar{position:relative;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 28px;border-bottom:1px solid var(--border);
+  background:rgba(6,8,15,.85);backdrop-filter:blur(20px)}
+.tb-brand{display:flex;align-items:center;gap:12px}
+.tb-gem{width:24px;height:24px;position:relative}
+.tb-gem svg{width:100%;height:100%}
+.tb-name{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--muted2);text-transform:uppercase}
+.tb-right{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em}
+
+/* ─── HERO ─── */
+.hero{position:relative;z-index:5;text-align:center;padding:28px 20px 20px;border-bottom:1px solid var(--border)}
+.hero-vs{display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:8px}
+.hco{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;letter-spacing:-.02em}
+.hco.p{color:var(--p4)} .hco.d{color:var(--d4)}
+.hvs{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);
+  background:var(--s2);padding:4px 12px;border-radius:4px;border:1px solid var(--border)}
+.hero-sub{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+
+/* ─── ROLE BANNER ─── */
+.role-banner{position:relative;z-index:5;padding:16px 28px;
+  background:linear-gradient(90deg,rgba(27,58,107,.15),rgba(122,88,16,.1));
+  border-bottom:1px solid var(--border)}
+.role-banner-title{font-family:'JetBrains Mono',monospace;font-size:9px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.role-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:700px){.role-grid{grid-template-columns:1fr 1fr}}
+.role-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;
+  padding:10px 12px;transition:border-color .2s}
+.role-card:focus-within{border-color:var(--accent)}
+.role-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;
+  text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.role-seg{font-size:10px;padding:2px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace}
+.rs-open{background:rgba(27,58,107,.4);color:var(--p4);border:1px solid rgba(27,58,107,.6)}
+.rs-rebuttal{background:rgba(239,68,68,.2);color:#F87171;border:1px solid rgba(239,68,68,.3)}
+.rs-cross{background:rgba(244,196,48,.15);color:var(--gold);border:1px solid rgba(244,196,48,.25)}
+.rs-close{background:rgba(22,163,74,.2);color:var(--green3);border:1px solid rgba(22,163,74,.3)}
+.role-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+.role-input{width:100%;background:var(--s3);border:1px solid var(--border);border-radius:5px;
+  padding:6px 9px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;
+  transition:all .2s;outline:none}
+.role-input:focus{border-color:var(--accent);background:var(--s4)}
+.role-input::placeholder{color:var(--muted)}
+.role-assigned{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;
+  color:var(--p4);min-height:26px;letter-spacing:.02em}
+
+/* ─── NAV ─── */
+.nav{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:0 20px;display:flex;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nt{padding:11px 14px;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;
+  transition:all .18s;font-family:'JetBrains Mono',monospace;background:none;
+  border-top:none;border-left:none;border-right:none}
+.nt:hover{color:var(--text)} .nt.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nt.quiz-tab{color:var(--gold)} .nt.quiz-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* ─── MAIN ─── */
+main{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding:24px 20px 80px}
+.sec{display:none} .sec.active{display:block;animation:fadeUp .22s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── SEC HEADER ─── */
+.sh{margin-bottom:20px}
+.sh-eye{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.25em;color:var(--accent);text-transform:uppercase;margin-bottom:4px}
+.sh-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;line-height:1.1;letter-spacing:-.02em}
+.sh-sub{font-size:13px;color:var(--muted2);margin-top:4px}
+
+/* ─── QUIZ MODE ─── */
+.quiz-header{background:linear-gradient(135deg,rgba(244,196,48,.12),rgba(27,58,107,.12));
+  border:1px solid rgba(244,196,48,.25);border-radius:12px;padding:18px 22px;margin-bottom:20px}
+.quiz-header-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.quiz-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold)}
+.quiz-stats{display:flex;gap:16px;align-items:center}
+.qs{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2)}
+.qs span{font-weight:600}
+.qs .correct{color:var(--green3)} .qs .wrong{color:var(--red3)} .qs .total{color:var(--accent)}
+.quiz-mode-btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.qmb{padding:7px 16px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.08em;transition:all .18s;border:1px solid}
+.qmb-active{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.qmb-inactive{background:transparent;color:var(--muted2);border-color:var(--border)}
+.qmb-inactive:hover{border-color:var(--gold);color:var(--gold)}
+
+/* Quiz Card */
+.quiz-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;transition:box-shadow .25s}
+.quiz-card.revealed{box-shadow:0 0 0 1px rgba(79,195,247,.25)}
+.qc-number{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;
+  color:var(--muted);text-transform:uppercase;padding:14px 18px 0}
+.qc-scenario{padding:12px 18px 14px;border-bottom:1px solid var(--border);
+  background:rgba(139,105,20,.08)}
+.qc-scenario-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--d3);margin-bottom:6px}
+.qc-scenario-text{font-size:14px;font-style:italic;line-height:1.6;color:var(--d4);
+  font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500}
+.qc-answer-area{padding:14px 18px}
+.qc-answer-prompt{font-size:13px;color:var(--muted2);margin-bottom:10px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em}
+.qc-textarea{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:7px;
+  padding:10px 14px;font-size:14px;line-height:1.65;color:var(--text);
+  font-family:'DM Sans',sans-serif;resize:vertical;min-height:80px;outline:none;transition:all .2s}
+.qc-textarea:focus{border-color:var(--accent);background:var(--s3)}
+.qc-textarea::placeholder{color:var(--muted)}
+.qc-actions{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
+.btn{padding:8px 18px;border-radius:7px;border:none;font-size:11px;font-weight:600;
+  cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all .18s;letter-spacing:.06em}
+.btn-reveal{background:var(--accent);color:var(--bg)} .btn-reveal:hover{background:#37B4F0}
+.btn-next{background:var(--s3);color:var(--text);border:1px solid var(--border)}
+.btn-next:hover{background:var(--s4)}
+.btn-mark-good{background:rgba(22,163,74,.2);color:var(--green3);border:1px solid rgba(22,163,74,.35)}
+.btn-mark-good:hover{background:rgba(22,163,74,.35)}
+.btn-mark-bad{background:rgba(185,28,28,.2);color:var(--red3);border:1px solid rgba(185,28,28,.35)}
+.btn-mark-bad:hover{background:rgba(185,28,28,.35)}
+.qc-hint{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);padding-top:2px}
+
+/* Ideal answer reveal */
+.qc-ideal{display:none;margin-top:12px;border-radius:8px;overflow:hidden}
+.qc-ideal.show{display:block;animation:slideDown .25s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.qci-header{padding:10px 14px;display:flex;align-items:center;gap:8px;
+  background:rgba(79,195,247,.08);border-bottom:1px solid rgba(79,195,247,.15)}
+.qci-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--accent)}
+.qci-pillar{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;
+  border-radius:3px;background:rgba(27,58,107,.3);color:var(--p4);border:1px solid rgba(27,58,107,.5)}
+.qci-rubric{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;
+  border-radius:3px;background:rgba(26,107,60,.2);color:var(--green3);border:1px solid rgba(26,107,60,.3)}
+.qci-body{padding:12px 14px;font-size:13.5px;line-height:1.72;color:var(--text);
+  background:rgba(79,195,247,.04);border:1px solid rgba(79,195,247,.1);border-top:none;border-radius:0 0 8px 8px}
+.qci-body strong{color:var(--p4)} .qci-body em{color:var(--gold);font-style:normal}
+.qci-data{margin-top:8px;padding:8px 12px;background:rgba(244,196,48,.05);
+  border:1px solid rgba(244,196,48,.15);border-radius:6px;font-size:11px;
+  font-family:'JetBrains Mono',monospace;color:var(--d4)}
+.qci-data::before{content:'📊 Key data: ';color:var(--gold);font-weight:600}
+.qci-pivot{margin-top:6px;padding:8px 12px;background:rgba(22,163,74,.06);
+  border:1px solid rgba(22,163,74,.2);border-radius:6px;font-size:12px;color:var(--green3)}
+.qci-pivot::before{content:'⚡ Pivot line: ';font-weight:700}
+
+/* Score indicator on card */
+.qc-score-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-left:8px;vertical-align:middle}
+.dot-good{background:var(--green2)} .dot-bad{background:var(--red2)} .dot-none{background:var(--muted)}
+
+/* ─── SCRIPT SECTION ─── */
+.script{background:var(--s2);border-radius:8px;padding:16px 20px;margin:10px 0;
+  border:1px solid var(--border);position:relative}
+.script::before{content:'"';position:absolute;top:6px;left:12px;
+  font-family:'Cormorant Garamond',serif;font-size:48px;color:rgba(255,255,255,.04);line-height:1}
+.script-who{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;
+  text-transform:uppercase;margin-bottom:8px;padding:4px 8px;border-radius:4px;
+  display:inline-block;background:rgba(27,58,107,.3);color:var(--p4);border:1px solid rgba(27,58,107,.5)}
+.script-text{font-size:14.5px;line-height:1.78;color:var(--text);padding-left:4px}
+.script-text strong{color:var(--p4);font-weight:600}
+.script-text em{color:var(--gold);font-style:normal}
+.script-text .v{color:var(--green3)} .script-text .w{color:var(--red3)}
+.spillar{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--accent);
+  text-transform:uppercase;margin:18px 0 4px;display:flex;align-items:center;gap:8px}
+.spillar::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ─── REBUTTAL BLOCKS ─── */
+.rb{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px;transition:box-shadow .2s}
+.rb:hover{box-shadow:0 0 0 1px rgba(79,195,247,.12)}
+.rb.open{border-color:rgba(79,195,247,.3);box-shadow:0 0 0 1px rgba(79,195,247,.2)}
+.rb-hdr{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;background:var(--s2);user-select:none}
+.rb-hdr:hover{background:var(--s3)}
+.pri{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;
+  padding:2px 7px;border-radius:3px;flex-shrink:0;text-transform:uppercase}
+.pri-fire{background:rgba(239,68,68,.2);color:#F87171;border:1px solid rgba(239,68,68,.3)}
+.pri-high{background:rgba(245,158,11,.2);color:#FBBF24;border:1px solid rgba(245,158,11,.3)}
+.pri-use{background:rgba(42,82,152,.2);color:var(--p4);border:1px solid rgba(42,82,152,.3)}
+.rb-tw{flex:1}
+.rb-title{font-size:13.5px;font-weight:600}
+.rb-trigger{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px}
+.rb-tag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:3px;
+  background:rgba(26,107,60,.15);color:var(--green3);border:1px solid rgba(26,107,60,.25)}
+.rb-arrow{color:var(--muted);font-size:11px;transition:transform .2s;flex-shrink:0}
+.rb.open .rb-arrow{transform:rotate(180deg)}
+.rb-body{display:none;padding:14px 16px;border-top:1px solid var(--border)}
+.rb.open .rb-body{display:block}
+.rb-strat{font-size:10.5px;font-family:'JetBrains Mono',monospace;color:var(--gold);
+  background:rgba(244,196,48,.07);padding:7px 10px;border-radius:5px;
+  border:1px solid rgba(244,196,48,.2);margin-bottom:10px}
+.rb-says{background:rgba(122,88,16,.08);border:1px solid rgba(122,88,16,.2);
+  border-radius:6px;padding:9px 13px;margin-bottom:8px;font-size:13px;
+  font-style:italic;color:var(--d4)}
+.rb-says::before{content:'They say: ';font-style:normal;font-weight:700;color:var(--d3)}
+.rb-counter{font-size:13.5px;line-height:1.72;color:var(--text);margin-bottom:8px}
+.rb-data{padding:7px 11px;background:rgba(79,195,247,.05);border:1px solid rgba(79,195,247,.15);
+  border-radius:5px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#A8D8EE}
+.rb-data::before{content:'📊 ';color:var(--accent)}
+.rb-pivot{padding:7px 11px;background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.2);
+  border-radius:5px;font-size:12px;color:var(--green3);margin-top:6px}
+.rb-pivot::before{content:'⚡ Pivot: ';font-weight:700}
+
+/* ─── PREDICTION CARDS ─── */
+.pred{background:var(--s1);border:1px solid rgba(122,88,16,.25);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.pred-hdr{padding:11px 16px;background:rgba(122,88,16,.09);border-bottom:1px solid rgba(122,88,16,.15);
+  display:flex;align-items:center;gap:10px;cursor:pointer}
+.pred-hdr:hover{background:rgba(122,88,16,.15)}
+.pred-prob{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;
+  padding:2px 7px;border-radius:3px;flex-shrink:0;text-transform:uppercase}
+.ph{background:rgba(239,68,68,.2);color:#F87171;border:1px solid rgba(239,68,68,.3)}
+.pm{background:rgba(245,158,11,.2);color:#FBBF24;border:1px solid rgba(245,158,11,.3)}
+.pl{background:rgba(107,207,154,.2);color:var(--green3);border:1px solid rgba(107,207,154,.3)}
+.pred-title{font-size:13.5px;font-weight:600;flex:1}
+.pred-body{display:none;padding:14px 16px;border-top:1px solid rgba(122,88,16,.15)}
+.pred.open .pred-body{display:block}
+.pred-claim{background:rgba(122,88,16,.08);border:1px solid rgba(122,88,16,.2);
+  border-radius:6px;padding:9px 13px;margin-bottom:10px;font-size:13px;font-style:italic;color:var(--d4)}
+.pred-claim::before{content:'🎯 Their claim: ';font-style:normal;font-weight:700;color:var(--d3)}
+.pred-counter{border-radius:6px;padding:9px 13px;font-size:13px;line-height:1.7;
+  border:1px solid rgba(79,195,247,.2);background:rgba(79,195,247,.04)}
+.pred-counter::before{content:'⚡ Our counter: ';font-weight:700;color:var(--accent)}
+
+/* ─── CROSS-EXAM ─── */
+.qna{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.qna-q{padding:11px 15px;background:rgba(27,58,107,.16);border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:10px;font-size:13.5px;font-weight:600}
+.qna-icon{background:var(--p);color:white;border-radius:4px;padding:2px 7px;
+  font-size:8px;font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-top:2px}
+.qna-icon.db{background:var(--d)}
+.qna-a{padding:11px 15px;font-size:13px;line-height:1.7;color:#C0CDD8}
+.qna-why{margin-top:8px;padding:7px 10px;background:rgba(244,196,48,.06);
+  border-radius:5px;border:1px solid rgba(244,196,48,.15);font-size:11px;
+  color:var(--d4);font-family:'JetBrains Mono',monospace}
+
+/* ─── SCORECARD ─── */
+.score-hdr{display:grid;grid-template-columns:1fr 110px 110px;gap:8px;margin-bottom:4px;padding:0 4px}
+.score-row{display:grid;grid-template-columns:1fr 110px 110px;gap:8px;align-items:center;
+  padding:10px 4px;border-bottom:1px solid var(--border)}
+.score-row:last-child{border-bottom:none}
+.sph{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;text-align:center;color:var(--muted)}
+.sph:first-child{text-align:left}
+.spn{font-size:13px;font-weight:500}
+.sps{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.badge{padding:5px 8px;border-radius:5px;font-size:10px;font-weight:700;text-align:center;letter-spacing:.1em;font-family:'JetBrains Mono',monospace}
+.bs{background:rgba(22,163,74,.2);color:var(--green3);border:1px solid rgba(22,163,74,.35)}
+.bm{background:rgba(42,82,152,.2);color:var(--p4);border:1px solid rgba(42,82,152,.35)}
+.bw{background:rgba(185,28,28,.2);color:var(--red3);border:1px solid rgba(185,28,28,.35)}
+
+/* ─── DATA CHIPS ─── */
+.dchip{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 13px}
+.dc-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.dc-val{font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.dc-src{font-size:10px;color:var(--muted);margin-top:2px}
+.dv-p{color:var(--p4)} .dv-d{color:var(--d4)} .dv-s{color:var(--green3)} .dv-w{color:var(--red3)}
+
+/* ─── TIMER ─── */
+.timer-w{background:var(--s2);border:1px solid var(--border);border-radius:12px;
+  padding:18px 22px;margin-bottom:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.tdisplay{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:500;
+  color:var(--green2);transition:color .5s;min-width:120px;letter-spacing:.04em}
+.tdisplay.y{color:var(--yellow2)} .tdisplay.r{color:var(--red2);animation:blk .5s ease-in-out infinite alternate}
+@keyframes blk{from{opacity:1}to{opacity:.4}}
+.tc{display:flex;flex-direction:column;gap:8px}
+.tl{font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;margin-bottom:2px}
+.tsegs{display:flex;gap:6px;flex-wrap:wrap}
+.tsb{padding:6px 12px;border-radius:5px;border:1px solid var(--border);background:var(--s3);
+  color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:all .18s}
+.tsb:hover,.tsb.on{background:var(--p);color:white;border-color:var(--p)}
+.tacts{display:flex;gap:7px;margin-top:4px}
+.tprog{flex:1;min-width:180px}
+.ptrack{height:5px;border-radius:3px;background:var(--s3);overflow:hidden;margin-top:6px}
+.pfill{height:100%;border-radius:3px;background:var(--green2);transition:width 1s linear,background .5s}
+.tinfo{font-size:10px;color:var(--muted);margin-top:5px;font-family:'JetBrains Mono',monospace}
+
+/* ─── CHECKLIST ─── */
+.cl{list-style:none}
+.cl li{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;color:#C0CDD8}
+.cl li:last-child{border-bottom:none}
+.cb{width:17px;height:17px;border-radius:4px;border:2px solid var(--border);background:transparent;cursor:pointer;flex-shrink:0;margin-top:1px;appearance:none;-webkit-appearance:none;transition:all .15s;position:relative}
+.cb:checked{background:var(--green);border-color:var(--green)}
+.cb:checked::after{content:'✓';position:absolute;top:-2px;left:2px;font-size:11px;color:white;font-weight:bold}
+.cl-lbl{flex:1;line-height:1.45}
+.cl-lbl.done{text-decoration:line-through;opacity:.45}
+
+/* ─── MISC ─── */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px}
+.cp{border-left:3px solid var(--p2)} .cd{border-left:3px solid var(--d2)}
+.ci{border-left:3px solid var(--accent);background:rgba(79,195,247,.04)}
+.cw{border-left:3px solid var(--red2);background:rgba(185,28,28,.04)}
+.cs{border-left:3px solid var(--green);background:rgba(22,163,74,.04)}
+.cg{border-left:3px solid var(--gold);background:rgba(244,196,48,.04)}
+.card-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px}
+.lp{color:var(--p4)} .ld{color:var(--d4)} .la{color:var(--accent)} .ls{color:var(--green3)} .lw{color:var(--red3)} .lg{color:var(--gold)} .lm{color:var(--muted2)}
+.card-body{font-size:13.5px;line-height:1.7;color:#BDC9D8}
+.note{background:rgba(244,196,48,.06);border:1px solid rgba(244,196,48,.2);border-radius:7px;padding:10px 14px;font-size:12.5px;color:#E8D8A0;margin:10px 0}
+.note strong{color:var(--gold)}
+.note.info{background:rgba(79,195,247,.05);border-color:rgba(79,195,247,.2);color:#A8D8EE}
+.note.info strong{color:var(--accent)}
+.note.warn{background:rgba(185,28,28,.06);border-color:rgba(185,28,28,.2);color:#F0B0A0}
+.note.warn strong{color:var(--red3)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:800px){.g2,.g3{grid-template-columns:1fr}}
+.div{height:1px;background:var(--border);margin:16px 0}
+.mc{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px;position:relative;overflow:hidden}
+.mc::before{content:attr(data-n);position:absolute;right:14px;top:10px;font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:900;color:rgba(255,255,255,.03);line-height:1}
+.mc-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:4px;margin-bottom:7px;background:rgba(79,195,247,.1);color:var(--accent);border:1px solid rgba(79,195,247,.2)}
+.mc-title{font-size:14px;font-weight:700;margin-bottom:6px}
+.mc-body{font-size:13px;line-height:1.7;color:#BDC9D8}
+.mc-deploy{margin-top:8px;font-size:11px;background:rgba(27,58,107,.2);border-radius:5px;padding:6px 10px;color:var(--p4);border:1px solid rgba(27,58,107,.4);font-style:italic}
+.mc-deploy::before{content:'Deploy: ';font-style:normal;font-weight:700}
+
+/* Progress bar for quiz */
+.quiz-progress-bar{height:4px;background:var(--s3);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:2px;transition:width .4s ease}
+
+footer{position:relative;z-index:5;text-align:center;padding:14px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em}
+</style>
+</head>
+<body>
+
+<div class="bg-canvas">
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-brand">
+    <div class="tb-gem">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L22 9L18 22H6L2 9L12 2Z" fill="url(#gem-grad)" opacity=".9"/>
+        <path d="M12 2L22 9H2L12 2Z" fill="rgba(255,255,255,.15)"/>
+        <defs><linearGradient id="gem-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1B3A6B"/><stop offset="100%" stop-color="#8B6914"/></linearGradient></defs>
+      </svg>
+    </div>
+    <div class="tb-name">War Room — Swiderski Team</div>
+  </div>
+  <div class="tb-right">FIN 515 · PSU · April 28, 2026</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-vs">
+    <div class="hco p">Pandora A/S</div>
+    <div class="hvs">SCS-007 · Debate 3</div>
+    <div class="hco d">De Beers Group</div>
+  </div>
+  <div class="hero-sub">Lab-Grown vs. Mined · Brandi Swiderski · Lee Fisk · Nwene Win · Sean Pak</div>
+</div>
+
+<!-- ROLE ASSIGNMENT BANNER -->
+<div class="role-banner">
+  <div class="role-banner-title">⟶ Assign Roles — Type Each Name Below</div>
+  <div class="role-grid">
+    <div class="role-card">
+      <div class="role-label"><span class="role-seg rs-open">Opening</span><span class="role-time">4 min</span></div>
+      <input class="role-input" id="r0" type="text" placeholder="Who delivers opening?" oninput="saveRole(0)" autocomplete="off">
+      <div class="role-assigned" id="rd0"></div>
+    </div>
+    <div class="role-card">
+      <div class="role-label"><span class="role-seg rs-rebuttal">Rebuttal</span><span class="role-time">3 min</span></div>
+      <input class="role-input" id="r1" type="text" placeholder="Who delivers rebuttal?" oninput="saveRole(1)" autocomplete="off">
+      <div class="role-assigned" id="rd1"></div>
+    </div>
+    <div class="role-card">
+      <div class="role-label"><span class="role-seg rs-cross">Cross-Exam</span><span class="role-time">3 min shared</span></div>
+      <input class="role-input" id="r2" type="text" placeholder="Who leads cross-exam?" oninput="saveRole(2)" autocomplete="off">
+      <div class="role-assigned" id="rd2"></div>
+    </div>
+    <div class="role-card">
+      <div class="role-label"><span class="role-seg rs-close">Closing</span><span class="role-time">2 min</span></div>
+      <input class="role-input" id="r3" type="text" placeholder="Who delivers closing?" oninput="saveRole(3)" autocomplete="off">
+      <div class="role-assigned" id="rd3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nt active" onclick="show('scorecard')">📊 Scorecard</button>
+  <button class="nt" onclick="show('opening')">🎤 Opening</button>
+  <button class="nt" onclick="show('rebuttal')">⚡ Rebuttal</button>
+  <button class="nt" onclick="show('crossexam')">🔍 Cross-Exam</button>
+  <button class="nt" onclick="show('closing')">🏁 Closing</button>
+  <button class="nt quiz-tab" onclick="show('quiz')">🧠 Drill Mode</button>
+  <button class="nt" onclick="show('predict')">🎯 Predict De Beers</button>
+  <button class="nt" onclick="show('data')">📋 Data Card</button>
+  <button class="nt" onclick="show('micro')">📐 Micro Hooks</button>
+  <button class="nt" onclick="show('checklist')">✅ Checklist</button>
+  <button class="nt" onclick="show('timer')">⏱ Timer</button>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════ SCORECARD ══════════════════════════════════ -->
+<section id="scorecard" class="sec active">
+  <div class="sh"><div class="sh-eye">Mission Overview</div><div class="sh-title">SCS-007 Readiness Scorecard</div><div class="sh-sub">Know this cold. Every argument flows from this table.</div></div>
+  <div class="g2">
+    <div>
+      <div class="score-hdr"><div class="sph">Pillar</div><div class="sph" style="color:var(--p4)">Pandora</div><div class="sph" style="color:var(--d4)">De Beers</div></div>
+      <div class="score-row"><div><div class="spn">1 — Origin Traceability</div><div class="sps">Blockchain · &gt;99% · Handler cert</div></div><div class="badge bm">Moderate</div><div class="badge bm">Moderate</div></div>
+      <div class="score-row"><div><div class="spn">2 — Ethical Stewardship</div><div class="sps">12 principles · Labor · UNGPs</div></div><div class="badge bw">Weak</div><div class="badge bm">Moderate</div></div>
+      <div class="score-row"><div><div class="spn">3 — Climate Neutrality</div><div class="sps">Net-zero · Legacy · Scopes 1–3</div></div><div class="badge bs">Strong ★</div><div class="badge bw">Weak</div></div>
+      <div class="score-row"><div><div class="spn">4 — Sustainable Production</div><div class="sps">LCA · Net-zero ≥50% categories</div></div><div class="badge bm">Moderate</div><div class="badge bw">Weak</div></div>
+      <div class="score-row"><div><div class="spn">5 — Sustainability Investment</div><div class="sps">ASM uplift · Community</div></div><div class="badge bw">Weak</div><div class="badge bs">Strong ★</div></div>
+    </div>
+    <div>
+      <div class="card cp"><div class="card-lbl lp">Central Argument</div><div class="card-body" style="font-size:13px">Pandora has <strong style="color:var(--p4)">structurally eliminated</strong> the worst-case sustainability risks De Beers cannot escape. On Pillars 3 &amp; 4 we win <em style="color:var(--gold)">by design, not effort</em>. Our Pillar 2 &amp; 5 gaps are <strong style="color:var(--green3)">remediable</strong>. De Beers' gaps — 130+ years of legacy emissions, land disturbance, ecosystem impacts — are <strong style="color:var(--red3)">irreversible.</strong></div></div>
+      <div class="card cg"><div class="card-lbl lg">★ Primary Research — Quinn, Pandora WA SQ Mall, Apr 2026</div><div class="card-body" style="font-size:12.5px">✓ Production in Thailand + new Vietnam lab opening<br>✓ All staff receive sustainability training<br>✓ Every diamond includes origin &amp; process documentation<br>✓ Quinn chose Pandora for its sustainability commitment<br>✓ Portland customers ask about sourcing more than most markets</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ OPENING ══════════════════════════════════ -->
+<section id="opening" class="sec">
+  <div class="sh"><div class="sh-eye">Segment 1 of 4 · 4 minutes</div><div class="sh-title">Opening Statement</div><div class="sh-sub">Fully scriptable. Name pillars explicitly. Every data point needs its source stated aloud.</div></div>
+  <div class="note info"><strong>Presenter:</strong> <span id="opening-name" style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600">Not yet assigned — set name above ↑</span> &nbsp;·&nbsp; ~560 words &nbsp;·&nbsp; Do not read more than 30 seconds continuously from a script (Debate Day Guide rule)</div>
+  <div class="script"><div class="script-who" id="ow0">Opening</div><div class="script-text">Good [morning/afternoon], Professor Appleyard and classmates. My name is [NAME], and I am speaking on behalf of <strong>Pandora A/S</strong> — the world's largest jewelry brand by volume, and a company that made a documented strategic decision in 2021: that the future of diamonds is not found underground.</div></div>
+  <div class="script"><div class="script-who" id="ow1">Opening</div><div class="script-text">The question before us is specific. Under the <strong>SCS-007 Jewelry Sustainability Standard</strong> — five pillars evaluating verified traceability, ethical stewardship, climate neutrality, sustainable production, and sustainability investment — which production model presents the stronger path to certification? Our answer is Pandora. Here is why.</div></div>
+  <div class="spillar">Pillar 1 — Verified Origin Traceability</div>
+  <div class="script"><div class="script-who" id="ow2">Opening</div><div class="script-text">SCS-007 requires greater than 99% origin accuracy, blockchain documentation, and certified handlers at every custody transfer. The mined diamond challenge is structural — a stone pulled from the earth has passed through geological time before any human documentation begins. De Beers verifies provenance across <em>four countries, 300,000 people, 77 countries downstream.</em><br><br>Pandora's CVD diamonds originate in a controlled growth chamber. <strong>We know the origin of every single diamond.</strong> Our Responsible Sourcing Programme is OECD-aligned. All precious metals from <span class="v">100% RJC Chain of Custody-certified refiners</span>. We have a blockchain gap — we acknowledge it — but we are closing a smaller structural gap from a stronger starting position. <em>Our primary research confirmed this directly: a Pandora store associate confirmed every lab-grown diamond includes documentation of how it was made and where it was grown.</em></div></div>
+  <div class="spillar">Pillar 3 — Climate Neutrality [Structural Advantage]</div>
+  <div class="script"><div class="script-who" id="ow3">Opening</div><div class="script-text">Pandora's lab-grown diamonds carry a carbon footprint of approximately <em>11.4 kg CO₂e per one-carat gold ring</em> — roughly <em>95% lower</em> than the mined equivalent. This is not marketing — it is a <span class="v">Carbon Trust-verified lifecycle assessment.</span><br><br>Since 2024, Pandora's operations run on <strong>100% renewable electricity</strong>. Our SBTi Scope 1+2 target was <span class="v">surpassed ahead of schedule</span>. In May 2024, Pandora issued a <em>€500M sustainability-linked bond</em> where the interest rate is tied to 2028 emissions targets — financial accountability, not a pledge.<br><br>De Beers committed to a <span class="w">42% Scope 1+2 reduction by 2030</span>. As of 2024, they've achieved approximately <span class="w">7%</span> — from their own self-reported data. More critically, SCS-007 uniquely requires <em>legacy emissions</em> accounting — the carbon from historical operations. De Beers has been mining since <strong>1888</strong>. That 130-year burden cannot be offset.</div></div>
+  <div class="spillar">Pillar 4 — Sustainable Production</div>
+  <div class="script"><div class="script-who" id="ow4">Opening</div><div class="script-text">SCS-007 requires net-zero impacts in ≥50% of life cycle impact categories. Pandora's CVD production uses <strong>100% recycled silver &amp; gold, 100% renewable electricity</strong>. No land disturbance. No tailings. No ecosystem destruction. Mining, by nature, displaces earth, consumes water, generates tailings — documented in De Beers' own 2024 sustainability report.</div></div>
+  <div class="spillar">Framing — Honest About Our Gaps</div>
+  <div class="script"><div class="script-who" id="ow5">Opening</div><div class="script-text">We will be direct. Pandora has two weak pillars — <strong>Ethical Stewardship</strong> (2018–19 labor violation, 92 unlawful dismissals in Thailand) and <strong>Sustainability Investment</strong> (no ASM community investment documented). We are not hiding these.<br><br>But the microeconomic reality: SCS-007 evaluates the <em>full social cost</em> of diamond production — including externalities mining imposes on communities, climate, and ecosystems. Under that lens, the lab-grown model is the structurally more certifiable path. Not because Pandora is perfect — <strong>because we have already eliminated the negative externalities De Beers can never fully remediate.</strong> Thank you.</div></div>
+</section>
+
+<!-- ══════════════════════════════════ REBUTTAL ══════════════════════════════════ -->
+<section id="rebuttal" class="sec">
+  <div class="sh"><div class="sh-eye">Segment 2 of 4 · 3 minutes</div><div class="sh-title">Rebuttal — All 10 Angles</div><div class="sh-sub">Select 3 blocks based on what they actually said. Each block ≈ 55 sec. Start every block: "My colleague just told us that [X]. Let's examine that."</div></div>
+  <div class="note warn"><strong>Presenter: <span id="rebuttal-name">Not yet assigned</span></strong> — Take notes during their Opening. Pick 3 blocks from below that match their actual claims. Never read a pre-written script.</div>
+
+  <div id="rb-list"></div>
+</section>
+
+<!-- ══════════════════════════════════ CROSS-EXAM ══════════════════════════════════ -->
+<section id="crossexam" class="sec">
+  <div class="sh"><div class="sh-eye">Segment 3 of 4 · 3 min shared</div><div class="sh-title">Cross-Examination</div><div class="sh-sub">Ask 2 questions max. Deliver each in under 20 seconds. Cut off long answers: "Thank you — I asked specifically about X."</div></div>
+  <div class="note info"><strong>Presenter: <span id="cross-name">Not yet assigned</span></strong></div>
+  <div class="g2">
+    <div>
+      <div class="card-lbl lp" style="margin-bottom:8px">Our Questions → De Beers</div>
+      <div id="xq-list"></div>
+    </div>
+    <div>
+      <div class="card-lbl ld" style="margin-bottom:8px">De Beers Questions → Us (prep answers)</div>
+      <div id="dq-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ CLOSING ══════════════════════════════════ -->
+<section id="closing" class="sec">
+  <div class="sh"><div class="sh-eye">Segment 4 of 4 · 2 minutes</div><div class="sh-title">Closing Statement</div><div class="sh-sub">No new evidence. Synthesize the actual debate. Reference specific moments. End with a clean final line.</div></div>
+  <div class="note warn"><strong>Presenter: <span id="closing-name">Not yet assigned</span></strong> &nbsp;·&nbsp; ~260 words &nbsp;·&nbsp; Reference what actually happened in the room — not the script you planned.</div>
+  <div class="script"><div class="script-who" id="cw0">Closing</div><div class="script-text">Professor Appleyard, classmates — let me synthesize what this debate has revealed about SCS-007 and these two production models.</div></div>
+  <div class="script"><div class="script-who" id="cw1">Closing</div><div class="script-text">On <strong>Pillar 1</strong> — De Beers built impressive blockchain technology. Pandora has something their technology cannot replicate: a diamond that has never touched the ground, never passed through an informal market. Both have gaps. Ours are technical and closeable. Theirs are geographic and historical.</div></div>
+  <div class="script"><div class="script-who" id="cw2">Closing</div><div class="script-text">On <strong>Pillar 2</strong> — we acknowledged our 2018–19 labor record before this debate began. We showed the remediation trajectory. De Beers' ethical exposure is the structural complexity of operating industrial mining across four developing economies — policy documents don't resolve that.</div></div>
+  <div class="script"><div class="script-who" id="cw3">Closing</div><div class="script-text">On <strong>Pillar 3</strong> — 95% lower carbon, Carbon Trust-verified. And when asked about <em>legacy emissions</em> today — [reference what actually happened]. That moment is itself a data point for any SCS-007 auditor.</div></div>
+  <div class="script"><div class="script-who" id="cw4">Closing</div><div class="script-text">On <strong>Pillar 4</strong> — no tailings pond at a Pandora facility. No land displacement. No ecosystem clearance. The negative externalities of mining are structurally absent from CVD production.</div></div>
+  <div class="script"><div class="script-who" id="cw5">Closing</div><div class="script-text">On <strong>Pillar 5</strong> — we are behind. We said so. We have a plan.</div></div>
+  <div class="script" style="border-left:2px solid var(--accent)"><div class="script-who" id="cw6">Closing</div><div class="script-text">The microeconomic case for SCS-007 is a cost-benefit analysis of the <em>full social cost</em> of production. When you include externalities, legacy emissions, irreversible land impacts, and information asymmetry that marketing can't resolve — the lab-grown model is the credible, forward-looking path.<br><br>Pandora is not yet certified. Neither is De Beers. But of the two, <strong>Pandora has already structurally solved the problems that matter most.</strong> Judge not who has been sustainable longer — but who is more certifiable, today and tomorrow, under SCS-007. Thank you.</div></div>
+</section>
+
+<!-- ══════════════════════════════════ QUIZ / DRILL MODE ══════════════════════════════════ -->
+<section id="quiz" class="sec">
+  <div class="sh"><div class="sh-eye">Interactive Preparation</div><div class="sh-title">Drill Mode — If De Beers Says This…</div><div class="sh-sub">Type your answer, then reveal the ideal response. Score yourself. Practice until every counter is instinct.</div></div>
+
+  <div class="quiz-header">
+    <div class="quiz-header-top">
+      <div class="quiz-title">⚔ Debate Drill</div>
+      <div class="quiz-stats">
+        <div class="qs">Score: <span class="correct" id="q-correct">0</span> / <span class="total" id="q-total">0</span></div>
+        <div class="qs">Skipped: <span class="wrong" id="q-skipped">0</span></div>
+      </div>
+    </div>
+    <div class="quiz-mode-btns">
+      <button class="qmb qmb-active" id="qm-all" onclick="setQuizMode('all')">All Scenarios</button>
+      <button class="qmb qmb-inactive" id="qm-rebuttal" onclick="setQuizMode('rebuttal')">Rebuttal Only</button>
+      <button class="qmb qmb-inactive" id="qm-cross" onclick="setQuizMode('cross')">Cross-Exam Only</button>
+      <button class="qmb qmb-inactive" id="qm-audience" onclick="setQuizMode('audience')">Audience Q&amp;A</button>
+      <button class="qmb qmb-inactive" onclick="shuffleQuiz()">🔀 Shuffle</button>
+      <button class="qmb qmb-inactive" onclick="resetQuiz()">↺ Reset Scores</button>
+    </div>
+  </div>
+
+  <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="qpf" style="width:0%"></div></div>
+
+  <div id="quiz-cards"></div>
+</section>
+
+<!-- ══════════════════════════════════ PREDICT ══════════════════════════════════ -->
+<section id="predict" class="sec">
+  <div class="sh"><div class="sh-eye">Intelligence Briefing</div><div class="sh-title">Predict the De Beers Team</div><div class="sh-sub">11 anticipated arguments ranked by probability. Click each to see our counter.</div></div>
+  <div class="g2"><div id="pred-high"></div><div id="pred-low"></div></div>
+</section>
+
+<!-- ══════════════════════════════════ DATA ══════════════════════════════════ -->
+<section id="data" class="sec">
+  <div class="sh"><div class="sh-eye">Reference</div><div class="sh-title">Quick-Reference Data Card</div><div class="sh-sub">Print this. Cite specific numbers — "11.4 kg CO₂e, Carbon Trust-verified" not "lower emissions."</div></div>
+  <div class="note cs"><strong>★ Primary Research — Quinn, Pandora WA SQ Mall, April 2026:</strong> Production in Thailand + new Vietnam lab · All staff sustainability-trained · Every diamond includes origin/process documentation · Staff chose Pandora for sustainability · Portland customers ask more about sourcing than other markets</div>
+  <div class="g2"><div><div class="card-lbl lp" style="margin-bottom:8px">Pandora Key Numbers</div><div id="data-pandora" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div></div><div><div class="card-lbl ld" style="margin-bottom:8px">De Beers — Know Their Numbers</div><div id="data-debeers" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div></div></div>
+</section>
+
+<!-- ══════════════════════════════════ MICRO ══════════════════════════════════ -->
+<section id="micro" class="sec">
+  <div class="sh"><div class="sh-eye">FIN 515 Concepts</div><div class="sh-title">Microeconomic Hooks</div><div class="sh-sub">Never just name the concept — show how it applies to Pandora vs. De Beers under SCS-007.</div></div>
+  <div class="g2" id="micro-list"></div>
+</section>
+
+<!-- ══════════════════════════════════ CHECKLIST ══════════════════════════════════ -->
+<section id="checklist" class="sec">
+  <div class="sh"><div class="sh-eye">Preparation</div><div class="sh-title">Debate Prep Checklist</div></div>
+  <div class="g2">
+    <div>
+      <div class="card cp"><div class="card-lbl lp">Week Before (Apr 21–27)</div><ul class="cl" id="cl-week"></ul></div>
+      <div class="card" style="border-left:3px solid var(--gold);background:rgba(244,196,48,.03);margin-top:12px"><div class="card-lbl lg">Night Before (Apr 27)</div><ul class="cl" id="cl-night"></ul></div>
+    </div>
+    <div>
+      <div class="card cs"><div class="card-lbl ls">Day Of — Debate 3 starts 1:40 PM</div><ul class="cl" id="cl-day"></ul></div>
+      <div class="card cw" style="margin-top:12px"><div class="card-lbl lw">Automatic B Risks</div>
+        <div class="card-body" style="font-size:13px">
+          ❌ Reading Rebuttal verbatim without responding to their actual claims<br>
+          ❌ One person presenting 3+ of 4 segments<br>
+          ❌ "Our company is more sustainable" — generic, C-level per rubric<br>
+          ❌ New evidence in Closing — ground rule violation<br>
+          ❌ Exceeding time — instructor cuts you off<br>
+          ❌ Citing De Beers data without noting it's self-reported
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ TIMER ══════════════════════════════════ -->
+<section id="timer" class="sec">
+  <div class="sh"><div class="sh-eye">Practice Tool</div><div class="sh-title">Debate Timer</div><div class="sh-sub">The instructor will cut you off mid-sentence. Practice with real limits.</div></div>
+  <div class="timer-w">
+    <div><div class="tl">Time Remaining</div><div class="tdisplay" id="td">4:00</div></div>
+    <div class="tc">
+      <div class="tl">Select Segment</div>
+      <div class="tsegs">
+        <button class="tsb on" onclick="setT(240,this)">Opening (4:00)</button>
+        <button class="tsb" onclick="setT(180,this)">Rebuttal (3:00)</button>
+        <button class="tsb" onclick="setT(180,this)">Cross-Exam (3:00)</button>
+        <button class="tsb" onclick="setT(120,this)">Closing (2:00)</button>
+        <button class="tsb" onclick="setT(240,this)">Q&amp;A (4:00)</button>
+      </div>
+      <div class="tacts">
+        <button class="btn" style="background:var(--green);color:white" onclick="startT()">▶ Start</button>
+        <button class="btn" style="background:var(--s3);border:1px solid var(--border)" onclick="pauseT()">⏸ Pause</button>
+        <button class="btn" style="background:transparent;color:var(--red2);border:1px solid rgba(185,28,28,.3)" onclick="resetT()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="tprog"><div class="tl">Progress</div><div class="ptrack"><div class="pfill" id="pf" style="width:100%"></div></div><div class="tinfo" id="ti">Ready — press Start when you begin speaking</div></div>
+  </div>
+</section>
+
+</main>
+<footer>PSU School of Business · FIN 515 Microeconomics · Spring 2026 · Pandora Team: Brandi Swiderski · Lee Fisk · Nwene Win · Sean Pak</footer>
+
+<script>
+// ─────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────
+const ROLES = ['Opening','Rebuttal','Cross-Exam','Closing'];
+
+const REBUTTALS = [
+  {id:'rb1',priority:'fire',label:'🔥 Lead Block',title:'Legacy Emissions — De Beers\' Unanswerable Gap',trigger:'USE IF: De Beers claims Pillar 3 strength via SBTi or climate commitments',rubric:'Pillar 3 · Verified data',strategy:'Hit the one SCS-007 requirement De Beers literally cannot answer — legacy emissions. Structural gap, not performance lag.',says:'De Beers has SBTi-validated targets aligned to 1.5°C, demonstrating credible climate leadership under Pillar 3.',counter:'My colleague just told us De Beers has SBTi validation. Let\'s be precise about what that means versus what SCS-007 requires.<br><br>Having a target is not the same as being on track. De Beers\' 2024 self-reported data shows approximately <strong>7% Scope 1+2 reduction from a 2021 baseline</strong> — against a 42% target by 2030. They need 35 more percentage points in six years, primarily in South Africa where over <strong>80% of grid electricity is coal-generated</strong> — per their own report.<br><br>But the more fundamental issue is SCS-007\'s <strong>legacy emissions</strong> requirement. This pillar requires accounting for the cumulative carbon burden of historical operations. De Beers has been mining since <em>1888</em>. <strong>Their 2024 sustainability report contains zero reference to legacy emissions accounting.</strong> We looked. There is nothing there.<br><br>Pandora began diamond production in 2021. Our legacy emissions burden is essentially zero.',data:'7% achieved vs. 42% target (De Beers 2024, self-reported) · 80%+ SA grid = fossil fuel (De Beers 2024, self-reported) · Legacy emissions: not in De Beers 2024 report · Pandora: 11.4 kg CO₂e per ring (Carbon Trust-verified LCA)',pivot:'We are not debating ambition — we are debating SCS-007 compliance readiness. The gap between commitment and trajectory, compounded by an unaddressed legacy emissions obligation, is De Beers\' most significant Pillar 3 obstacle.'},
+
+  {id:'rb2',priority:'fire',label:'🔥 High Priority',title:'Tracr Covers Upstream Only — Not the Full SCS-007 Chain',trigger:'USE IF: De Beers leads with Tracr as Pillar 1 proof',rubric:'Pillar 1 · Counter-evidence',strategy:'Acknowledge Tracr is real technology, then surgically expose what it does NOT cover under SCS-007.',says:'De Beers\' Tracr blockchain platform has registered 2.8 million diamonds — proving world-class Pillar 1 traceability.',counter:'Tracr is genuinely impressive technology — we acknowledge 2.8 million upstream rough diamonds registered. But the word "upstream" is doing a great deal of work in that claim.<br><br>Tracr documents rough diamonds from De Beers\' own mines to Sightholders — steps one and two of a supply chain that then passes through cutting, polishing, manufacturing, and retail, often in third countries entirely outside Tracr\'s architecture. SCS-007 Pillar 1 requires <strong>certified handlers at every custody transfer point, all the way to the consumer.</strong> De Beers has not identified what system documents those downstream transfers.<br><br>More fundamentally: Tracr cannot retroactively verify where a stone was before entering De Beers\' system. <strong>Pandora\'s diamonds are created in a growth chamber. There is no "before." The origin problem is structurally solved, not managed with technology.</strong>',data:'Tracr: 2.8M upstream rough diamonds registered (De Beers 2024, self-reported) · SCS-007 Pillar 1: requires >99% accuracy with blockchain + certified handlers at every custody transfer · Pandora RSP: OECD Due Diligence aligned, biannual third-party audits',pivot:'Both companies have Pillar 1 gaps. Ours is technical — blockchain deployment. Theirs is geographic and historical — you cannot un-mine a diamond.'},
+
+  {id:'rb3',priority:'fire',label:'🔥 High Priority',title:'Acknowledge & Pivot — Pillar 2 Labor Record',trigger:'USE IF: De Beers attacks the 2018–19 Thailand labor violation',rubric:'Pillar 2 · Acknowledge-pivot',strategy:'Pre-empt in Opening if possible. If they raise it first, deploy this block immediately. Acknowledge-pivot is explicitly named as excellent practice in the Debate Day Guide.',says:'Pandora\'s 2018–19 Thai labor violations — 92 unlawful union dismissals — make Pillar 2 certification impossible.',counter:'We agree. We have said this ourselves. The 2018–19 dismissals were determined unlawful by Thai labor authorities, documented by the Workers Rights Consortium. We are not disputing the record.<br><br>What we dispute is the framing that this is <em>disqualifying</em> rather than <em>remediable</em>. Since 2019: UNI Global Union partnership, <strong>100% collective bargaining agreement coverage for all Thailand employees</strong>, zero material fines or fatalities in Corporate Knights January 2026 ranking. Our 2025 annual report shows 345 active grievance complaints filed — meaning the mechanism works.<br><br>Compared to De Beers\' Pillar 2 exposure: operating large-scale industrial mining across four developing economies with ASM sector conflicts and community displacement is not a single incident. It is the structural condition of the production method. <strong>A remediable, seven-year-old single-facility incident versus ongoing systemic exposure — which is more certifiable?</strong>',data:'92 workers dismissed (WRC documented) · Thai labor authorities: unlawful · UNI Global Union partnership (2019–present) · 100% Thailand CBA coverage · Corporate Knights #1 consumer goods globally, Jan 2026 (zero fines/fatalities)',pivot:'Pandora\'s Pillar 2 gap requires documented remediation. De Beers\' Pillar 2 exposure requires resolving a structural feature of industrial mining in conflict-adjacent geographies. Categorically different remediation challenges.'},
+
+  {id:'rb4',priority:'high',label:'High',title:'Pillar 4 — Land, Water & Ecosystem Externalities',trigger:'USE IF: De Beers claims strong Pillar 4 via LCA or reclamation',rubric:'Pillar 4 · Externalities',strategy:'Use the microeconomics externalities framing explicitly — this directly hits the argument construction criterion.',says:'De Beers actively manages environmental impacts through land reclamation, water recycling, and tailings management.',counter:'SCS-007 Pillar 4 does not ask whether impacts are "managed." It requires <strong>net-zero impacts in ≥50% of life cycle impact categories</strong> — including ecosystem, water, and human health. "Managed" and "net-zero" are categorically different thresholds.<br><br>Mining permanently alters the landscape. Tailings ponds are managed, not closed. Land reclamation does not restore pre-mining biodiversity. These are the negative externalities that markets systematically underprice — which is exactly why SCS-007 Pillar 4 demands third-party LCA verification against specific impact categories.<br><br><strong>Pandora\'s CVD production has no land footprint. No tailings. No ecosystem clearance. No water use at mining scale.</strong> These are not performance achievements — they are structural absences.',data:'SCS-007 Pillar 4: net-zero in ≥50% of LCA impact categories — air, water, ecosystem, human health (SCS-007 v1.1 Section 7) · Pandora LCA: Carbon Trust verified · De Beers: operations in Botswana, South Africa, Namibia, Canada — kimberlite pipe mining',pivot:'From an externalities standpoint: mining imposes costs on ecosystems that aren\'t priced into the market price of a diamond. SCS-007 Pillar 4 internalizes those costs. CVD production eliminates the externality rather than managing it.'},
+
+  {id:'rb5',priority:'high',label:'High',title:'Energy Intensity ≠ Emissions Intensity',trigger:'USE IF: De Beers attacks CVD as "energy-intensive"',rubric:'Pillar 3 · Data precision',strategy:'Accept their premise (CVD uses 215 kWh) and show why it doesn\'t lead to their conclusion. Analytical rigor over rhetoric.',says:'CVD lab-grown diamonds require ~215 kWh per carat — far more than natural formation, making lab-grown unsustainable.',counter:'We accept the premise — <strong>CVD production is energy-intensive at approximately 215 kWh per carat</strong>, per peer-reviewed research. We do not dispute that figure.<br><br>But energy intensity and <em>emissions</em> intensity are not the same variable when the energy source is renewable. Pandora\'s operations run on <span style="color:var(--green3)">100% renewable electricity as of 2024</span>. Our diamonds are cut and polished with 100% renewable electricity.<br><br>Compare: De Beers\' South African operations — a substantial share of their production — operate on a grid where over <strong>80% of electricity is fossil-fuel generated</strong>, per their own 2024 report. Today, a Pandora CVD diamond produces approximately 11.4 kg CO₂e per ring. The emissions math is not close.',data:'CVD energy: ~215 kWh/carat (MDPI Energies 2021, peer-reviewed) · Pandora ops: 100% renewable electricity (2024 onward) · SA grid: >80% fossil fuel (De Beers 2024, self-reported) · Pandora ring: 11.4 kg CO₂e (Carbon Trust-verified LCA)',pivot:'The "lab-grown uses more kWh" argument is meaningless without knowing the carbon intensity of those kWh. A kWh of solar is not a kWh of coal. De Beers is presenting half the equation.'},
+
+  {id:'rb6',priority:'high',label:'High',title:'Pillar 5 — Concede Gracefully, Frame Structurally',trigger:'USE IF: De Beers leads with GemFair, ASM investment, community contributions',rubric:'Pillar 5 · Acknowledge-pivot',strategy:'Concede De Beers\' strongest pillar quickly and gracefully — this demonstrates analytical honesty the rubric rewards. Then pivot to the structural framing.',says:'De Beers\' GemFair program with 400+ ASM sites demonstrates strong Pillar 5 compliance far beyond anything Pandora offers.',counter:'We agree. De Beers\' community investment programs — GemFair, Okavango Eternal, national government partnerships — are genuine and substantial. Pillar 5 is De Beers\' strongest pillar. We have said so ourselves. We do not dispute it.<br><br>But here is the microeconomic framing: <strong>SCS-007 Pillar 5 was constructed with the recognition that mining creates community dependencies — and therefore mining companies carry pre-existing obligations to invest in those communities.</strong> 20% of SCS-007 certification fees flow to ASM community uplift. That mechanism exists because the mining industry created the problem it is now funding solutions for.<br><br>Pandora needs to build an ASM investment program from scratch — that is a real gap. But we are building new obligations on a clean slate, not managing 130 years of community displacement obligations as a precondition.',data:'De Beers GemFair: 400+ ASM sites, Sierra Leone (De Beers 2024) · SCS-007 Pillar 5: 20% of certificate fees to ASM uplift · Pandora: EUR 500M sustainability-linked bond, USD 10M annual sustainability spend — capacity exists; ASM channeling does not',pivot:'De Beers\' Pillar 5 strength is the consequence of having caused the problem Pillar 5 is designed to solve. Pandora\'s gap is buildable from zero.'},
+
+  {id:'rb7',priority:'use',label:'Situational',title:'RJC Certification ≠ SCS-007 Compliance',trigger:'USE IF: De Beers conflates RJC 5th recertification with SCS-007 Pillar 2 readiness',rubric:'Pillar 2 · Standard distinction',strategy:'Expose the equivocation between two different standards.',says:'De Beers\' 5th RJC recertification and founding membership demonstrates Pillar 2 ethical leadership.',counter:'RJC certification and SCS-007 Pillar 2 compliance are not the same standard.<br><br>The Responsible Jewellery Council Code of Practices is a broader industry baseline that has existed since 2005. SCS-007 was finalized in <strong>March 2024 — less than two years ago</strong> — and is explicitly more stringent, requiring conformance with twelve specific principles under third-party SCS audit. De Beers has never been audited against SCS-007 requirements.<br><br>Being a founding RJC member demonstrates industry engagement. It does not demonstrate SCS-007 readiness.',data:'RJC CoP: established 2005, broad industry standard · SCS-007 v1.1: final version July 2025, final format March 2024 — far newer and more specific · De Beers: no SCS-007 audit on record',pivot:'Holding up RJC certification as evidence of SCS-007 readiness is like holding up a food handler\'s permit as evidence of Michelin star quality. Both matter — they are simply not the same standard.'},
+
+  {id:'rb8',priority:'use',label:'Situational',title:'Mining Supports Developing Economies — Reframe Through Pillar 4',trigger:'USE IF: De Beers makes the "20,000 jobs / GDP contribution" argument',rubric:'Pillar 4 · Pillar 5 · Framework',strategy:'Respect the economic argument, then redirect to SCS-007 framework. Do not let the debate become about development economics.',says:'De Beers employs 20,000+ people and is a primary economic driver in Botswana, Namibia, and South Africa.',counter:'The economic development contribution of De Beers in its host countries is real and meaningful — we do not minimize it. The question is whether that contribution is relevant to the SCS-007 certification framework we are being evaluated against today.<br><br>SCS-007 does not certify employment policy or GDP contribution. It certifies performance across five specific pillars. And the same communities that benefit from mining employment also bear costs: <strong>land disturbance, water consumption, tailings management, and long-run climate costs of 130 years of industrial extraction</strong> — costs that markets systematically underprice because they fall on third parties, not on De Beers\' balance sheet.',data:'De Beers employees: ~15,482 in 19 countries (De Beers 2024) · SCS-007 evaluation framework: 5 specific pillars — employment not a scored dimension',pivot:'The debate question is: which production model offers the more credible path to SCS-007 certification? Not: which model creates more jobs. Answering a different question is a redirect, not an argument.'},
+
+  {id:'rb9',priority:'use',label:'Situational',title:'BPP Assurance vs. Third-Party SCS-007 Audit',trigger:'USE IF: De Beers uses BPP as Pillar 2 proof',rubric:'Pillar 2 · Verified vs. self-reported',strategy:'Demonstrate "distinguishes verified from self-reported" criterion — applied to certification standards.',says:'De Beers\' BPP Assurance Programme includes rigorous third-party audits — demonstrating Pillar 2 compliance readiness.',counter:'The BPP programme is De Beers\' proprietary assurance framework — designed by De Beers, administered through entities De Beers engages. We should be precise about what "third-party" means here.<br><br>The Bureau Veritas assurance report on De Beers\' 2024 sustainability data explicitly notes its scope was limited to selected quantitative indicators and carried out to a <strong>"limited level of assurance"</strong> — which Bureau Veritas itself notes is substantially lower than reasonable assurance. SCS-007 certification requires independent audit against a specific published standard by an SCS-accredited body.',data:'Bureau Veritas assurance (De Beers 2024): "limited level of assurance" — "substantially lower than reasonable assurance" · BPP: De Beers proprietary programme · SCS-007 audit: independent third-party accredited by SCS Standards',pivot:'"Limited assurance on selected indicators by an engaged auditor" is categorically different from "SCS-007 certification by an independent accredited body."'},
+
+  {id:'rb10',priority:'use',label:'Situational',title:'The Lightbox Contradiction',trigger:'USE IF: De Beers attacks lab-grown as inherently less credible or sustainable',rubric:'Cross-cutting · Strategic',strategy:'Use De Beers\' own corporate history against their argument.',says:'Lab-grown diamonds lack the authenticity and sustainability credibility of natural diamonds.',counter:'This is an interesting argument to hear from De Beers, because De Beers itself operated <strong>Lightbox — a CVD lab-grown diamond subsidiary</strong> — until recently discontinuing jewelry-grade production. If lab-grown production lacks sustainability credibility, we need to understand why De Beers invested in it, built a facility for it, and sold it to consumers under their own brand for years.<br><br>One of two conclusions follows: either lab-grown diamonds are a credible production category — in which case De Beers\' argument fails — or De Beers operated a product line it now claims lacks sustainability credibility, which raises questions about the integrity of that claim.',data:'Lightbox: De Beers CVD lab-grown diamond subsidiary, operated until discontinuation · De Beers 2024 Sustainability Report: "Technology and Services — Synthetics" listed as business area',pivot:'We are happy to evaluate lab-grown diamonds on sustainability merits — that is exactly what SCS-007 is designed to do. Dismissing the production category while your company operated within it is not an evidence-based argument.'}
+];
+
+const QUIZ_DATA = [
+  {type:'rebuttal',scenario:'De Beers opens by saying: "Our Tracr blockchain platform has now registered 2.8 million diamonds from source to Sightholder — this is the gold standard of Pillar 1 traceability, and no lab-grown company has anything close."',pillar:'Pillar 1',rubric:'Counter-evidence targets their specific claim',ideal:'Acknowledge Tracr is impressive — 2.8M upstream registrations. Then: Tracr documents rough diamonds from mines to Sightholders — the first two links of a much longer chain. SCS-007 requires certified handlers at every custody transfer to the consumer. What system documents cutting, polishing, and retail stages after diamonds leave De Beers\' direct control? And more fundamentally: Tracr cannot retroactively verify where a stone was before entering De Beers\' system. Pandora\'s diamonds are created in a growth chamber. There is no "before." The origin problem is structurally solved, not managed with technology.',data:'Tracr: 2.8M upstream only (De Beers 2024, self-reported) · SCS-007 Pillar 1: certified handlers at every custody transfer to consumer · Pandora: CVD origin documented from moment of creation',pivot:'Both companies have Pillar 1 gaps. Ours is technical and closeable. Theirs is geographic and historical — you cannot un-mine a diamond.'},
+
+  {type:'rebuttal',scenario:'De Beers states: "We have SBTi-validated targets aligned to 1.5°C, demonstrating that De Beers is a serious and credible actor on climate. Pandora\'s Scope 3 emissions remain behind their own targets."',pillar:'Pillar 3',rubric:'Uses specific data + distinguishes verified from self-reported',ideal:'Having an SBTi target is not the same as being on track. De Beers\' own self-reported 2024 data shows approximately 7% Scope 1+2 reduction from a 2021 baseline — against a 42% target by 2030. They need 35 more percentage points in 6 years, primarily in South Africa where 80%+ of the grid is fossil-fuel generated (from their own report). On Pandora\'s Scope 3 lag: we acknowledge it. But our total emissions in 2024 were ~286,198 tonnes CO₂e — De Beers\' Scope 1+2 alone is ~1.5 million metric tonnes. The scale difference is material. And critically, De Beers\' 2024 sustainability report contains no reference to legacy emissions accounting — a unique SCS-007 requirement. We looked. There is nothing there.',data:'De Beers: 7% achieved vs. 42% target (self-reported) · SA grid: >80% fossil fuel (self-reported) · Pandora total: 286,198 t CO₂e vs. De Beers Scope 1+2 alone: 1.5 Mt CO₂e · Legacy emissions: absent from De Beers 2024 report',pivot:'SBTi validation is a target. The question is trajectory. And no offset portfolio resolves 130 years of legacy emissions that SCS-007 explicitly requires accounting for.'},
+
+  {type:'rebuttal',scenario:'"Pandora\'s 2018 to 2019 Thailand scandal — 92 workers unlawfully fired for union organizing — is a direct violation of SCS-007 Pillar 2\'s freedom of association principle. This is not a gap. This is a disqualifier."',pillar:'Pillar 2',rubric:'Acknowledge-pivot technique — explicitly rewarded by rubric',ideal:'We agree on the facts. The 2018–19 dismissals were determined unlawful by Thai labor authorities and documented fully by the Workers Rights Consortium. We said this in our Opening. Freedom of association is a Tier 1 SCS-007 requirement — we acknowledge the gap is directly material. What we dispute is "disqualifying" versus "remediable." Since 2019: UNI Global Union partnership, 100% CBA coverage for all Thailand employees, zero material fines or fatalities in the 2026 Corporate Knights ranking. SCS-007 evaluates current state and trajectory — both have improved materially. Compare: De Beers\' Pillar 2 exposure is the structural complexity of operating in four developing economies with ASM sector conflicts. A single-facility incident seven years ago with documented remediation versus ongoing systemic exposure. Which is more certifiable?',data:'92 workers dismissed (WRC documented) · Thai auth: unlawful · 100% Thailand CBA coverage (post-2019) · Corporate Knights #1 consumer goods, Jan 2026, zero fines/fatalities',pivot:'Remediable, seven-year-old, single-facility incident with documented trajectory vs. structural mining labor complexity in 4 developing economies. Which is more certifiable?'},
+
+  {type:'rebuttal',scenario:'"CVD diamond production requires approximately 215 kilowatt-hours per carat — that\'s an enormous energy footprint. Lab-grown is not more sustainable on Pillar 3, it\'s just unsustainable in a different way."',pillar:'Pillar 3',rubric:'Accept premise then reframe — analytical rigor over rhetoric',ideal:'We accept the 215 kWh figure — that is accurate, peer-reviewed research, and we do not dispute it. But energy intensity and emissions intensity are not the same variable when the energy source is renewable. Pandora\'s operations run on 100% renewable electricity as of 2024. Our diamonds are cut and polished with 100% renewable electricity. Our primary research confirmed production facilities are in Thailand with a new Vietnam lab using renewable sourcing agreements. Now compare: De Beers\' South Africa operations — a substantial share of their production — operate on a grid where 80%+ of electricity is fossil-fuel generated, per their own 2024 report. A kWh of solar is not a kWh of coal. De Beers is presenting half the equation and reaching the wrong conclusion.',data:'CVD energy: ~215 kWh/carat (MDPI Energies 2021, peer-reviewed) · Pandora: 100% renewable ops (Pandora Annual Report 2025) · SA grid: >80% fossil fuel (De Beers 2024, self-reported) · Pandora ring: 11.4 kg CO₂e (Carbon Trust-verified)',pivot:'Energy intensity without source = half the equation. Renewable kWh and coal kWh produce categorically different emissions outcomes.'},
+
+  {type:'rebuttal',scenario:'"De Beers\' GemFair program directly connects to and uplifts over 400 artisanal mining sites in Sierra Leone. SCS-007 Pillar 5 exists precisely for programs like this. Pandora has zero equivalent."',pillar:'Pillar 5',rubric:'Acknowledge gracefully — demonstrates analytical honesty',ideal:'We agree. De Beers\' GemFair program and broader community investment are the most developed in the industry. Pillar 5 is De Beers\' strongest pillar — we have said so in our own analysis. We concede it. But here is the microeconomic framing: SCS-007 Pillar 5 was constructed with the recognition that mining creates community dependencies — and therefore mining companies carry pre-existing obligations. 20% of SCS-007 certificate fees flow to ASM uplift. That mechanism exists because mining created the problem it is now funding solutions for. Pandora needs to build an ASM investment program from scratch — that is a real gap. But we are building new obligations on a clean slate, not managing 130 years of community displacement obligations as a precondition to certification.',data:'GemFair: 400+ ASM sites (De Beers 2024) · SCS-007: 20% of certificate fees to ASM uplift · Pandora: EUR 500M sustainability bond, USD 10M annual spend — capacity exists; ASM channeling does not',pivot:'De Beers\' Pillar 5 strength is the consequence of causing the problem Pillar 5 is designed to solve. Pandora builds from zero.'},
+
+  {type:'cross',scenario:'You are leading cross-examination. De Beers just finished their Opening, which emphasized their SBTi validation and climate roadmap. What question do you ask first?',pillar:'Pillar 3 — Legacy Emissions',rubric:'Precise and strategic — forces acknowledgment of specific gap',ideal:'"SCS-007\'s Climate Neutrality pillar uniquely requires accounting for legacy emissions — the cumulative carbon your historical operations have deposited into the atmosphere. De Beers has been mining since 1888. Has your company quantified its legacy emissions burden, and what specific strategy do you propose to address it under SCS-007?"',data:'De Beers 2024 sustainability report: zero reference to legacy emissions · This is a data gap they literally cannot answer with a number',pivot:'Their silence — or vague answer — is itself evidence of the gap, in real time, in front of Professor Appleyard.'},
+
+  {type:'cross',scenario:'De Beers answered your legacy emissions question vaguely, saying "we are working on it as part of our broader climate strategy." You have time for one more cross-exam question. What do you ask?',pillar:'Pillar 1 — Tracr Downstream',rubric:'Forces acknowledgment of specific technical gap',ideal:'"You\'ve cited Tracr — 2.8 million upstream rough diamonds registered. SCS-007 Pillar 1 requires certified handlers at every custody transfer all the way to the consumer. What specific system documents handler-level certification at the cutting, polishing, and retail stages — after diamonds leave De Beers\' direct control?"',data:'Tracr is upstream only · SCS-007 requires full chain-of-custody · If they cannot name a downstream system, they\'ve conceded the Pillar 1 gap live',pivot:'If they claim Tracr covers downstream, follow up: "Can you name the certified handlers registered in that system?"'},
+
+  {type:'cross',scenario:'De Beers turns to you and asks: "Your company admitted to unlawfully firing 92 union organizers. How can you argue Pillar 2 is certifiable with that record?" You have 45 seconds.',pillar:'Pillar 2 — Defensive Answer',rubric:'Acknowledge-pivot — explicit A-level technique in Debate Day Guide',ideal:'Transparent acknowledgment first. The 2018–19 dismissals were found unlawful by Thai labor authorities, documented by the Workers Rights Consortium. We have never claimed otherwise — we said so in our Opening. SCS-007 evaluates current state and trajectory, not only history. Since 2019: UNI Global Union partnership, 100% CBA coverage for all Thailand employees, zero material fines or fatalities in the 2026 Corporate Knights ranking. The gap is remediable. The trajectory is positive. A single-facility, seven-year-old incident with documented remediation is categorically different from ongoing structural mining labor complexity.',data:'100% Thailand CBA coverage · Corporate Knights #1 consumer goods, Jan 2026, zero fines/fatalities · 345 active grievance filings in 2025 — mechanisms function',pivot:'Remediable vs. systemic. Single facility vs. four countries. Which is more certifiable going forward?'},
+
+  {type:'audience',scenario:'An audience member asks: "Both companies claim renewable energy. How do we know Pandora\'s claim is actually credible versus just a marketing claim?"',pillar:'Pillar 3 — Evidence Quality',rubric:'Distinguishes verified from self-reported — 5-pt evidence criterion',ideal:'Fair and important challenge. Pandora\'s renewable electricity claim rests on two mechanisms: on-site solar generation at Thailand crafting facilities and local solar procurement agreements. Critically, this is not a self-assertion — Pandora\'s lifecycle assessment was independently verified by the Carbon Trust, a third-party organization that assessed the entire production lifecycle, not just Pandora\'s own reported figures. We also recommend Pandora transition from Renewable Energy Certificates to Power Purchase Agreements, which offer stronger additionality. But the 11.4 kg CO₂e per ring figure is Carbon Trust-verified, not Pandora-claimed.',data:'Carbon Trust LCA verification · On-site solar + procurement agreements · REC vs. PPA distinction · Comparison: De Beers SA grid >80% fossil fuel (self-reported)',pivot:'The distinction between Carbon Trust-verified and company self-reported is exactly what SCS-007 Pillar 3 auditors are trained to probe.'},
+
+  {type:'audience',scenario:'A classmate asks: "From a game theory perspective, if SCS-007 is so valuable, why hasn\'t Pandora already certified? Doesn\'t the delay suggest they\'re not actually confident they can pass?"',pillar:'Market Signaling — Strategic Framing',rubric:'Microeconomic concept applied correctly — argument construction criterion',ideal:'This is an excellent signaling theory question. SCS-007\'s final version was only released in March 2024 — less than two years ago. Consumer recognition of the standard is still developing. The decision to certify is a cost-benefit calculation: compliance investment and remediation costs weigh against signaling benefits that grow as the standard gains market recognition. From a game theory perspective, there is actually first-mover advantage for whoever certifies first — ALTR Created Diamonds is already certified. Neither Pandora nor De Beers has moved. Pandora\'s avoidance may reflect concern that Pillar 2 would not pass audit today. De Beers\' avoidance may reflect concern about legacy emissions accounting. Both are strategic calculations, not evidence of inability — and both create competitive risk if SCS-007 adoption accelerates.',data:'SCS-007 final version: March 2024 · ALTR Created Diamonds: already certified · Neither Pandora nor De Beers has announced certification pursuit',pivot:'The waiting game has a payoff structure. Whoever moves first captures the signaling premium. The clock is ticking.'},
+
+  {type:'audience',scenario:'"You said Pandora has no ASM community investment — isn\'t that just free-riding on the sustainability narrative while mining companies like De Beers do the actual work of supporting those communities?"',pillar:'Pillar 5 — Free Rider Problem',rubric:'Microeconomic concept — public goods and free-rider framing',ideal:'This is a genuine values question and it deserves a direct answer. The free-rider framing is accurate — Pandora benefits from the broader narrative of diamond industry sustainability without currently contributing to ASM community investment. SCS-007 Pillar 5 exists precisely to prevent that free-riding. We acknowledge the gap is real and material — our own analysis rates Pillar 5 as Weak. But the remediation path is clear: a dedicated ASM community investment fund through organizations like the Alliance for Responsible Mining, structured around verified impact metrics. Pandora has the financial capacity — EUR 500M sustainability-linked bond, USD 10M annual sustainability spend. The channeling, not the capacity, is missing. We have outlined the specific mechanism. The question is whether we will execute.',data:'EUR 500M sustainability bond · USD 10M annual sustainability spend · Alliance for Responsible Mining as potential partner · Pillar 5: Weak — acknowledged in our own analysis',pivot:'Acknowledging the free-rider gap and presenting a specific remediation plan is stronger than denying it. The rubric rewards analytical honesty.'}
+];
+
+const PREDICTIONS = [
+  {prob:'ph',pct:'95%',title:'Tracr = gold standard Pillar 1 proof',claim:'Our Tracr blockchain platform has registered 2.8 million diamonds — proving superior Pillar 1 traceability.',counter:'Tracr is upstream only — mine to Sightholders. SCS-007 requires certified handlers to the consumer. The downstream gap is unaddressed. And Pandora\'s CVD origin is documented from birth — no blockchain needed to verify a diamond that never existed outside our facility before documentation began.'},
+  {prob:'ph',pct:'92%',title:'GemFair / ASM = strong Pillar 5',claim:'GemFair\'s 400+ ASM sites demonstrate exactly what SCS-007 Pillar 5 requires — Pandora has nothing comparable.',counter:'Concede gracefully and immediately — then pivot. Pillar 5 is a mining obligation, not a virtue signal. The standard\'s ASM mechanism exists because mining created the dependency. Pandora builds compliance from a clean slate. Conceding one pillar while winning three is analytical maturity, not weakness.'},
+  {prob:'ph',pct:'90%',title:'Attack Thailand 2018–19 labor record',claim:'Pandora\'s unlawful dismissal of 92 union workers makes Pillar 2 certification impossible — freedom of association is Tier 1.',counter:'Pre-empt in Opening. Then: single-facility, 7-year-old incident with documented remediation vs. structural mining labor complexity in 4 developing economies. Remediable vs. systemic.'},
+  {prob:'ph',pct:'88%',title:'SBTi validation = strong Pillar 3',claim:'De Beers\' SBTi-validated targets demonstrate credible climate leadership on Pillar 3.',counter:'Target ≠ trajectory. 7% achieved vs. 42% needed. 35 more percentage points in 6 years in a country where 80%+ of grid electricity is coal. And zero reference to legacy emissions anywhere in their 2024 report — the one SCS-007 requirement unique to this standard.'},
+  {prob:'pm',pct:'78%',title:'CVD is "energy-intensive"',claim:'CVD lab-grown diamonds require 215 kWh per carat — making lab-grown unsustainable on Pillar 3.',counter:'Accept the kWh premise. Then: energy intensity ≠ emissions intensity when source is renewable. Pandora runs on 100% renewable. De Beers\' SA operations run on 80%+ coal grid. The kWh without the source is half the equation.'},
+  {prob:'pm',pct:'75%',title:'RJC 5th recertification = Pillar 2 proof',claim:'De Beers\' 5th RJC recertification and founding membership demonstrates Pillar 2 leadership.',counter:'RJC CoP (est. 2005) and SCS-007 (finalized 2024) are different standards with different scopes. De Beers has never been audited against SCS-007 criteria.'},
+  {prob:'pm',pct:'70%',title:'20,000 jobs / GDP contribution',claim:'De Beers employs 20,000+ people and drives GDP across Botswana, Namibia, South Africa.',counter:'Respect the argument — then redirect to the framework. SCS-007 doesn\'t certify employment policy. The same communities that benefit from jobs also bear costs: land disturbance, water, tailings, long-run climate impacts. SCS-007 Pillar 4 evaluates both sides.'},
+  {prob:'pm',pct:'65%',title:'Pandora\'s Scope 3 trajectory lag',claim:'Pandora has achieved only 34% of its planned total emissions reduction — Pillar 3 is weaker than claimed.',counter:'Acknowledge it. Then: Pandora total emissions ~286,198 t CO₂e vs. De Beers Scope 1+2 alone ~1.5 Mt CO₂e. Our lag is on a dramatically lower baseline. Scope 3 supplier decarbonization takes time industry-wide.'},
+  {prob:'pm',pct:'55%',title:'No blockchain = Pillar 1 disqualification',claim:'Pandora admits it has no blockchain system — a disqualifying Pillar 1 gap.',counter:'Blockchain solves the tracing problem for stones through many hands. Our CVD diamonds have no pre-documentation history to reconstruct. Deployment path is clear (Everledger, etc.) and remediation timeline is shorter because we\'re adding infrastructure, not solving a provenance mystery.'},
+  {prob:'pl',pct:'40%',title:'Lab-grown "lacks permanence / authenticity"',claim:'Lab-grown diamonds devalue over time and lack the permanence of natural diamonds.',counter:'Market positioning is not an SCS-007 pillar. We invite the team to identify which of the five pillars this claim addresses — because that\'s what we\'re being graded on.'},
+  {prob:'pl',pct:'35%',title:'BPP Assurance = strong Pillar 2 audit',claim:'De Beers\' BPP programme includes rigorous independent auditing equivalent to SCS-007 verification.',counter:'Bureau Veritas\' assurance on De Beers\' 2024 report was explicitly "limited level of assurance" — stated by Bureau Veritas to be substantially lower than reasonable assurance. SCS-007 requires independent audit by SCS-accredited bodies. These are different assurance frameworks.'}
+];
+
+const PANDORA_DATA = [
+  {l:'Carbon / 1-carat ring',v:'11.4 kg CO₂e',s:'Carbon Trust verified LCA ✓',c:'dv-s'},
+  {l:'vs. mined diamond',v:'~95% lower',s:'Pandora sustainability report',c:'dv-p'},
+  {l:'Own ops energy (2024)',v:'100% renewable',s:'Pandora Annual Report 2025 ✓',c:'dv-p'},
+  {l:'Scope 1+2 target',v:'Surpassed early',s:'90% reduction vs 2019 baseline',c:'dv-s'},
+  {l:'Total 2024 emissions',v:'286,198 t CO₂e',s:'99% Scope 3 supply chain',c:'dv-p'},
+  {l:'Scope 3 trajectory',v:'34% of plan',s:'50% target by 2030 — lagging',c:'dv-w'},
+  {l:'Sustainability bond',v:'EUR 500M',s:'May 2024; tied to 2028 targets',c:'dv-p'},
+  {l:'Precious metals',v:'100% recycled',s:'As of August 2024',c:'dv-s'},
+  {l:'Thailand CBA coverage',v:'100%',s:'Post-2019 remediation',c:'dv-s'},
+  {l:'2018–19 labor incident',v:'92 workers',s:'WRC documented; Thai auth: unlawful',c:'dv-w'},
+  {l:'Corporate Knights 2026',v:'#1',s:'Consumer goods; zero fines/fatalities',c:'dv-s'},
+  {l:'ASM investment',v:'None documented',s:'Material Pillar 5 gap',c:'dv-w'}
+];
+
+const DEBEERS_DATA = [
+  {l:'SBTi target Scope 1+2',v:'42% by 2030',s:'vs 2021 baseline',c:'dv-d'},
+  {l:'Actual reduction (2024)',v:'~7%',s:'De Beers 2024, SELF-REPORTED',c:'dv-w'},
+  {l:'SA grid fossil fuel',v:'>80%',s:'De Beers 2024, SELF-REPORTED',c:'dv-w'},
+  {l:'Scope 1+2 total (2024)',v:'~1.5 Mt CO₂e',s:'De Beers 2024, self-reported',c:'dv-d'},
+  {l:'Tracr registrations',v:'2.8M',s:'Upstream rough only — self-reported',c:'dv-d'},
+  {l:'Mining history',v:'Since 1888',s:'130+ years legacy emissions',c:'dv-w'},
+  {l:'Legacy emissions disclosure',v:'None',s:'Not in 2024 report — we verified',c:'dv-w'},
+  {l:'GemFair ASM sites',v:'400+',s:'Sierra Leone — Pillar 5 strength',c:'dv-s'},
+  {l:'Bureau Veritas assurance',v:'Limited',s:'"Substantially lower than reasonable"',c:'dv-w'},
+  {l:'RJC recertification',v:'5th (2024)',s:'Founding member — different standard',c:'dv-d'},
+  {l:'Lightbox (lab-grown sub)',v:'Discontinued',s:'CVD jewelry-grade production ended',c:'dv-d'},
+  {l:'Employees',v:'~15,482',s:'19 countries — self-reported',c:'dv-d'}
+];
+
+const MICRO_DATA = [
+  {n:'1',tag:'Negative Externalities',title:'Unpriced Social Costs of Mining',body:'Mining imposes land disturbance, water pollution, ecosystem disruption, and community displacement costs not priced into the diamond\'s market price. SCS-007 internalizes those external costs into certification requirements. CVD production eliminates the most significant negative externalities by design — there is no tailings externality where there is no tailings pond.',deploy:'De Beers claims "managed" environmental impacts — pivot to externalities framing: "managed" ≠ "net-zero."'},
+  {n:'2',tag:'Information Asymmetry',title:'The Diamond Lemons Problem',body:'Consumers cannot verify sustainability claims independently. This creates information asymmetry — sustainable producers cannot credibly distinguish themselves from greenwashers through self-reporting alone. Third-party SCS-007 certification resolves this through costly independent audit. De Beers\' Bureau Veritas "limited assurance" on selected indicators is a weaker signal than SCS-007 full certification.',deploy:'When either team cites company-published sustainability claims without third-party verification — invoke asymmetry and SCS-007\'s signaling function.'},
+  {n:'3',tag:'Cost-Benefit Analysis',title:'The Certification Investment Decision',body:'The SCS-007 certification decision is a CBA. For Pandora, structural lab-grown advantages dramatically lower compliance costs on Pillars 3 and 4 — the most capital-intensive for mining companies. The total cost-to-certify favors Pandora even accounting for Pillar 2 and 5 remediation, because De Beers faces irreversible structural costs (legacy emissions, land impact) that cannot be resolved at any investment level.',deploy:'Opening framing and Closing synthesis — positions our argument as an economic calculation, not a values argument.'},
+  {n:'4',tag:'Technological Substitution',title:'Factor Substitution and Market Power',body:'CVD production substitutes technology for a natural endowment — eliminating resource depletion (stock externality) and geographic monopoly rents from control of kimberlite deposits. Historically De Beers maintained market power through supply control. Technological substitution makes the supply curve more elastic over time. This is why De Beers operated Lightbox — hedging against the substitution.',deploy:'If De Beers attacks lab-grown as a category — invoke the Lightbox contradiction and the economic logic of substitution.'},
+  {n:'5',tag:'Market Signaling',title:'Signal Credibility and Costly Verification',body:'A credible signal must be costly to fake. SCS-007 achieves this through independent third-party audit. Pandora\'s EUR 500M sustainability-linked bond is a credible signal because missing 2028 targets triggers financial penalty. De Beers\' self-reported sustainability data with limited Bureau Veritas assurance is a weaker signal — the verification scope was limited to selected quantitative indicators.',deploy:'When citing data, contrast "Carbon Trust-verified" (costly signal) vs. "De Beers self-reported" (uncostly signal).'},
+  {n:'6',tag:'Game Theory',title:'First-Mover Advantage in Certification',body:'If SCS-007 gains market recognition — likely given ESG regulatory pressure — there is first-mover advantage. ALTR Created Diamonds is already certified. Neither Pandora nor De Beers has moved. The payoff matrix favors whoever certifies first, capturing the consumer signaling premium. Both teams are in a waiting game — the one that waits too long loses the differentiation value.',deploy:'Closing or Opening framing — positions SCS-007 certification as competitive strategy, not just compliance.'}
+];
+
+const CHECKLIST_WEEK = [
+  {text:'Assign all 4 roles — all members must present one segment (4-pt criterion)'},
+  {text:'Each presenter reads their segment aloud with a timer — at least twice'},
+  {text:'Memorize 5 core numbers: 11.4 kg CO₂e · 95% · EUR 500M · 7% vs 42% · 2.8M Tracr'},
+  {text:'Read De Beers 2024 Sustainability Report: climate p.22–25, social p.30–38, Bureau Veritas assurance p.62'},
+  {text:'Full team run-through: Opening + Rebuttal practice with mock De Beers arguments'},
+  {text:'Add Quinn store visit to Primary Research Appendix of written report'},
+  {text:'Practice Cross-Exam Q1 (legacy emissions) — deliver in under 20 seconds'},
+  {text:'Practice the acknowledge-pivot technique on Pillars 2 and 5'}
+];
+const CHECKLIST_NIGHT = [
+  {text:'Pick default Rebuttal Block order: Block 1 (legacy emissions), Block 2 (Tracr), Block 3 (Pillar 2 pivot)'},
+  {text:'Confirm Q1 (legacy emissions) leads Cross-Exam regardless of what happens'},
+  {text:'Print or download this app + data card for desk reference during debate'},
+  {text:'Sleep 7+ hours'}
+];
+const CHECKLIST_DAY = [
+  {text:'Arrive by 1:35 PM — take seats, confirm role order'},
+  {text:'During De Beers Opening: take notes, circle their specific pillar claims'},
+  {text:'Rebuttal presenter: select 3 blocks from notes — NOT from a pre-written script'},
+  {text:'Cross-Exam: cut off long answers — "Thank you — I asked specifically about X"'},
+  {text:'Closing: reference 2–3 specific moments from the actual debate, not the planned script'},
+  {text:'Confirm all 4 members presented one segment ✓'}
+];
+
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
+let roles = ['','','',''];
+let quizScores = {};
+let quizMode = 'all';
+let quizOrder = [...Array(QUIZ_DATA.length).keys()];
+let qCorrect = 0, qSkipped = 0;
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+window.onload = () => {
+  loadRoles();
+  renderRebuttals();
+  renderCrossExam();
+  renderQuiz();
+  renderPredictions();
+  renderData();
+  renderMicro();
+  renderChecklists();
+};
+
+// ─────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────
+function show(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ─────────────────────────────────────────
+// ROLE ASSIGNMENT
+// ─────────────────────────────────────────
+function saveRole(i){
+  roles[i] = document.getElementById('r'+i).value.trim();
+  document.getElementById('rd'+i).textContent = roles[i] ? roles[i] : '';
+  updateNameRefs();
+}
+
+function loadRoles(){
+  const names = ['Opening','Rebuttal','Cross-Exam','Closing'];
+  // Just set placeholders — roles start blank
+  updateNameRefs();
+}
+
+function updateNameRefs(){
+  const segIds = ['opening-name','rebuttal-name','cross-name','closing-name'];
+  const fallbacks = ['Not yet assigned','Not yet assigned','Not yet assigned','Not yet assigned'];
+  segIds.forEach((id,i)=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = roles[i] || fallbacks[i];
+  });
+  // Update script who labels
+  const owPre = ['ow0','ow1','ow2','ow3','ow4','ow5'];
+  const cwPre = ['cw0','cw1','cw2','cw3','cw4','cw5','cw6'];
+  owPre.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = roles[0] ? `🎤 ${roles[0]}` : 'Opening';
+  });
+  cwPre.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = roles[3] ? `🏁 ${roles[3]}` : 'Closing';
+  });
+}
+
+// ─────────────────────────────────────────
+// REBUTTALS
+// ─────────────────────────────────────────
+function renderRebuttals(){
+  const container = document.getElementById('rb-list');
+  if(!container) return;
+  container.innerHTML = REBUTTALS.map(r=>`
+    <div class="rb" id="${r.id}">
+      <div class="rb-hdr" onclick="toggleRb('${r.id}')">
+        <div class="pri pri-${r.priority}">${r.label}</div>
+        <div class="rb-tw">
+          <div class="rb-title">${r.title}</div>
+          <div class="rb-trigger">${r.trigger}</div>
+        </div>
+        <div class="rb-tag">${r.rubric}</div>
+        <div class="rb-arrow">▼</div>
+      </div>
+      <div class="rb-body">
+        <div class="rb-strat">Strategy: ${r.strategy}</div>
+        <div class="rb-says">${r.says}</div>
+        <div class="rb-counter">${r.counter}</div>
+        <div class="rb-data">${r.data}</div>
+        <div class="rb-pivot">${r.pivot}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleRb(id){document.getElementById(id).classList.toggle('open')}
+
+// ─────────────────────────────────────────
+// CROSS EXAM
+// ─────────────────────────────────────────
+function renderCrossExam(){
+  const xq = [
+    {q:'Legacy Emissions Quantification',qtext:'"SCS-007\'s Climate Neutrality pillar uniquely requires accounting for legacy emissions — the cumulative carbon your historical operations have deposited into the atmosphere. De Beers has been mining since 1888. Has your company quantified its legacy emissions burden, and what specific strategy do you propose to address it under SCS-007?"',why:'De Beers\' 2024 report is silent on legacy emissions. They cannot answer with data. Their silence is itself evidence of the gap in real time.'},
+    {q:'Downstream Handler Certification',qtext:'"You\'ve cited Tracr — 2.8 million upstream rough diamonds registered. SCS-007 Pillar 1 requires certified handlers at every custody transfer to the consumer. What specific system documents handler-level certification at cutting, polishing, and retail stages after diamonds leave De Beers\' direct control?"',why:'If they cannot name a downstream system, they\'ve conceded the Pillar 1 gap live. If they claim Tracr covers downstream: "Can you name the certified handlers registered in that system?"'},
+    {q:'42% Target Operational Milestones',qtext:'"Your SBTi target requires 42% Scope 1+2 reduction by 2030. Your 2024 self-reported data shows approximately 7%. What specific operational milestone — not an aspiration — will close the remaining 35 percentage points in six years, particularly given your own report states 80%+ of South Africa\'s grid is fossil-fuel generated?"',why:'Forces either a specific milestone they may not have, or acknowledgment that the trajectory requires acceleration they haven\'t demonstrated.'},
+    {q:'Lightbox Credibility Question',qtext:'"De Beers operated Lightbox — a CVD lab-grown diamond subsidiary — until recently discontinuing jewelry-grade production. If lab-grown production lacks sustainability credibility, why did De Beers invest in and sell it under your brand?"',why:'Forces a contradiction. Only use if they\'ve attacked lab-grown as a category.'},
+    {q:'Bureau Veritas Assurance Scope',qtext:'"De Beers\' 2024 sustainability report includes a Bureau Veritas assurance statement explicitly noting "limited level of assurance" on selected indicators — which Bureau Veritas states is substantially lower than reasonable assurance. Is that the audit rigor SCS-007 certification would accept?"',why:'Demonstrates "distinguishes verified from self-reported" — applied to their assurance level. Shows deep familiarity with their actual report.'}
+  ];
+
+  document.getElementById('xq-list').innerHTML = xq.map((q,i)=>`
+    <div class="qna">
+      <div class="qna-q"><div class="qna-icon">Q${i+1}${i===0?' — LEAD':''}</div>${q.q}</div>
+      <div class="qna-a">${q.qtext}<div class="qna-why">${q.why}</div></div>
+    </div>
+  `).join('');
+
+  const dq = [
+    {q:'Thailand Labor Violation',a:'Transparent acknowledgment first — this signals analytical maturity. The dismissals were unlawful per Thai labor authorities, documented by WRC. Since 2019: UNI Global Union partnership, 100% CBA coverage in Thailand, zero material fines or fatalities in Corporate Knights 2026 ranking, 345 active grievance filings in 2025. SCS-007 evaluates current state and trajectory — both have improved. The gap is remediable.'},
+    {q:'Zero ASM Investment',a:'We won\'t pretend Pillar 5 is anything other than Weak — our own report says so. But: Pandora\'s sustainability investment capacity is substantial — EUR 500M bond, USD 10M annual spend, #1 Corporate Knights 2026. The channeling, not the capacity, is missing. And Pillar 5 was built for mining companies because mining creates the dependencies it must address. We\'re building clean-slate compliance.'},
+    {q:'Scope 3 Trajectory Lag',a:'Real gap — acknowledged. Scope 3 supplier decarbonization takes time industry-wide. But compare scales: Pandora total 2024 emissions ~286,198 t CO₂e vs. De Beers Scope 1+2 alone ~1.5 Mt CO₂e. Our lag is on a dramatically lower starting volume. The scale difference is material to the certification comparison.'},
+    {q:'No Blockchain = Pillar 1 Failure',a:'We have not yet deployed a blockchain platform — accurate. But blockchain solves the tracing problem for stones through many hands across many countries. Our diamonds have no pre-documentation history to reconstruct — they\'re created in a growth chamber. Deployment path is clear (Everledger, etc.) and remediation timeline is shorter because we\'re adding documentation infrastructure, not solving a provenance mystery.'}
+  ];
+
+  document.getElementById('dq-list').innerHTML = dq.map((q,i)=>`
+    <div class="qna" style="border-color:rgba(122,88,16,.3)">
+      <div class="qna-q" style="background:rgba(122,88,16,.12)"><div class="qna-icon db">DQ${i+1}</div>${q.q}</div>
+      <div class="qna-a"><strong style="color:var(--p4)">Our Answer:</strong> ${q.a}</div>
+    </div>
+  `).join('');
+}
+
+// ─────────────────────────────────────────
+// QUIZ / DRILL MODE
+// ─────────────────────────────────────────
+function renderQuiz(){
+  const container = document.getElementById('quiz-cards');
+  if(!container) return;
+  
+  const filtered = quizOrder.filter(i=>{
+    const q = QUIZ_DATA[i];
+    if(quizMode==='all') return true;
+    if(quizMode==='rebuttal') return q.type==='rebuttal';
+    if(quizMode==='cross') return q.type==='cross';
+    if(quizMode==='audience') return q.type==='audience';
+    return true;
+  });
+
+  container.innerHTML = filtered.map((qi,pos)=>{
+    const q = QUIZ_DATA[qi];
+    const score = quizScores[qi];
+    const dotClass = score==='good'?'dot-good':score==='bad'?'dot-bad':'dot-none';
+    const typeLabel = q.type==='rebuttal'?'⚡ Rebuttal Scenario':q.type==='cross'?'🔍 Cross-Exam Scenario':'🎓 Audience Q&A Scenario';
+    return `
+    <div class="quiz-card" id="qcard-${qi}">
+      <div class="qc-number">${typeLabel} &nbsp;${pos+1} of ${filtered.length} <span class="qc-score-dot ${dotClass}"></span></div>
+      <div class="qc-scenario">
+        <div class="qc-scenario-label">If De Beers / Audience Says:</div>
+        <div class="qc-scenario-text">${q.scenario}</div>
+      </div>
+      <div class="qc-answer-area">
+        <div class="qc-answer-prompt">YOUR RESPONSE — Type your answer, then reveal the ideal counter:</div>
+        <textarea class="qc-textarea" id="qtxt-${qi}" placeholder="What do you say? Write your counter-argument here... (or just think it through, then reveal)"></textarea>
+        <div class="qc-actions">
+          <button class="btn btn-reveal" onclick="revealAnswer(${qi})">Reveal Ideal Response</button>
+          <button class="btn btn-mark-good" onclick="markScore(${qi},'good')">✓ Got it</button>
+          <button class="btn btn-mark-bad" onclick="markScore(${qi},'bad')">✗ Need more practice</button>
+          <div class="qc-hint">Pillar: <strong style="color:var(--p4)">${q.pillar}</strong></div>
+        </div>
+        <div class="qc-ideal" id="qideal-${qi}">
+          <div class="qci-header">
+            <div class="qci-label">Ideal Response</div>
+            <div class="qci-pillar">${q.pillar}</div>
+            <div class="qci-rubric">${q.rubric}</div>
+          </div>
+          <div class="qci-body">
+            ${q.ideal}
+            <div class="qci-data">${q.data}</div>
+            <div class="qci-pivot">${q.pivot}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateQuizStats();
+}
+
+function revealAnswer(qi){
+  const el = document.getElementById('qideal-'+qi);
+  el.classList.add('show');
+  document.getElementById('qcard-'+qi).classList.add('revealed');
+  updateProgressBar();
+}
+
+function markScore(qi, val){
+  const prev = quizScores[qi];
+  quizScores[qi] = val;
+  if(prev!=='good' && val==='good') qCorrect++;
+  if(prev==='good' && val!=='good') qCorrect--;
+  if(prev!=='bad' && val==='bad') qSkipped++;
+  if(prev==='bad' && val!=='bad') qSkipped--;
+  
+  // Update dot
+  const card = document.getElementById('qcard-'+qi);
+  const dot = card.querySelector('.qc-score-dot');
+  dot.className = 'qc-score-dot '+(val==='good'?'dot-good':'dot-bad');
+  
+  updateQuizStats();
+  updateProgressBar();
+  
+  // Reveal answer if marking
+  revealAnswer(qi);
+}
+
+function updateQuizStats(){
+  const total = Object.keys(quizScores).length;
+  document.getElementById('q-correct').textContent = qCorrect;
+  document.getElementById('q-total').textContent = total;
+  document.getElementById('q-skipped').textContent = qSkipped;
+  document.getElementById('q-total').parentElement.querySelector('.total').textContent = total;
+}
+
+function updateProgressBar(){
+  const total = QUIZ_DATA.length;
+  const done = Object.keys(quizScores).length;
+  document.getElementById('qpf').style.width = (done/total*100)+'%';
+}
+
+function setQuizMode(mode){
+  quizMode = mode;
+  document.querySelectorAll('.qmb').forEach(b=>b.className='qmb qmb-inactive');
+  const idMap = {all:'qm-all',rebuttal:'qm-rebuttal',cross:'qm-cross',audience:'qm-audience'};
+  if(idMap[mode]) document.getElementById(idMap[mode]).className='qmb qmb-active';
+  renderQuiz();
+}
+
+function shuffleQuiz(){
+  for(let i=quizOrder.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [quizOrder[i],quizOrder[j]]=[quizOrder[j],quizOrder[i]];
+  }
+  renderQuiz();
+}
+
+function resetQuiz(){
+  quizScores={};qCorrect=0;qSkipped=0;
+  quizOrder=[...Array(QUIZ_DATA.length).keys()];
+  renderQuiz();
+}
+
+// ─────────────────────────────────────────
+// PREDICTIONS
+// ─────────────────────────────────────────
+function renderPredictions(){
+  const high=[], low=[];
+  PREDICTIONS.forEach((p,i)=>{
+    const isHigh = p.pct>='75%';
+    const html = `
+    <div class="pred" id="pred-${i}">
+      <div class="pred-hdr" onclick="togP(${i})">
+        <div class="pred-prob ${p.prob}">${p.pct}</div>
+        <div class="pred-title">${p.title}</div>
+        <div class="rb-arrow">▼</div>
+      </div>
+      <div class="pred-body">
+        <div class="pred-claim">${p.claim}</div>
+        <div class="pred-counter">${p.counter}</div>
+      </div>
+    </div>`;
+    if(isHigh) high.push(html); else low.push(html);
+  });
+  document.getElementById('pred-high').innerHTML = `<div class="card-lbl lw" style="margin-bottom:8px">High Probability (75–95%)</div>` + high.join('');
+  document.getElementById('pred-low').innerHTML = `<div class="card-lbl lm" style="margin-bottom:8px">Medium & Lower Probability</div>` + low.join('');
+}
+function togP(i){
+  const el=document.getElementById('pred-'+i);
+  el.classList.toggle('open');
+  const arr=el.querySelector('.rb-arrow');
+  if(arr) arr.style.transform=el.classList.contains('open')?'rotate(180deg)':'';
+}
+
+// ─────────────────────────────────────────
+// DATA CARD
+// ─────────────────────────────────────────
+function renderData(){
+  document.getElementById('data-pandora').innerHTML = PANDORA_DATA.map(d=>`
+    <div class="dchip"><div class="dc-lbl">${d.l}</div><div class="dc-val ${d.c}">${d.v}</div><div class="dc-src">${d.s}</div></div>
+  `).join('');
+  document.getElementById('data-debeers').innerHTML = DEBEERS_DATA.map(d=>`
+    <div class="dchip"><div class="dc-lbl">${d.l}</div><div class="dc-val ${d.c}">${d.v}</div><div class="dc-src">${d.s}</div></div>
+  `).join('');
+}
+
+// ─────────────────────────────────────────
+// MICRO
+// ─────────────────────────────────────────
+function renderMicro(){
+  const container = document.getElementById('micro-list');
+  if(!container) return;
+  const half = Math.ceil(MICRO_DATA.length/2);
+  [0,1].forEach(col=>{
+    const div = document.createElement('div');
+    MICRO_DATA.slice(col*half,(col+1)*half).forEach(m=>{
+      div.innerHTML += `<div class="mc" data-n="${m.n}"><div class="mc-tag">${m.tag}</div><div class="mc-title">${m.title}</div><div class="mc-body">${m.body}</div><div class="mc-deploy">${m.deploy}</div></div>`;
+    });
+    container.appendChild(div);
+  });
+}
+
+// ─────────────────────────────────────────
+// CHECKLISTS
+// ─────────────────────────────────────────
+function renderChecklists(){
+  const mkList = (id, items) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = items.map(item=>`
+      <li><input type="checkbox" class="cb" onchange="chk(this)"><span class="cl-lbl">${item.text}</span></li>
+    `).join('');
+  };
+  mkList('cl-week', CHECKLIST_WEEK);
+  mkList('cl-night', CHECKLIST_NIGHT);
+  mkList('cl-day', CHECKLIST_DAY);
+}
+function chk(cb){
+  const l=cb.nextElementSibling;
+  if(cb.checked)l.classList.add('done');
+  else l.classList.remove('done');
+}
+
+// ─────────────────────────────────────────
+// TIMER
+// ─────────────────────────────────────────
+let iv=null,tot=240,rem=240,running=false;
+function setT(s,btn){
+  clearInterval(iv);running=false;tot=s;rem=s;
+  document.querySelectorAll('.tsb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  updT();
+  document.getElementById('ti').textContent='Ready — press Start when you begin speaking';
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('pf').style.background='var(--green2)';
+  document.getElementById('td').className='tdisplay';
+}
+function startT(){
+  if(running)return;running=true;
+  iv=setInterval(()=>{rem--;if(rem<=0){rem=0;clearInterval(iv);running=false;document.getElementById('ti').textContent='⏰ TIME — finish sentence and stop';}updT();},1000);
+}
+function pauseT(){clearInterval(iv);running=false;document.getElementById('ti').textContent='Paused'}
+function resetT(){clearInterval(iv);running=false;rem=tot;updT();document.getElementById('ti').textContent='Reset';document.getElementById('pf').style.width='100%';document.getElementById('pf').style.background='var(--green2)';document.getElementById('td').className='tdisplay';}
+function updT(){
+  const m=Math.floor(rem/60),s=rem%60;
+  document.getElementById('td').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  const pct=(rem/tot)*100;
+  const pf=document.getElementById('pf');
+  pf.style.width=pct+'%';
+  const w1=tot*.33,w2=tot*.15;
+  const td=document.getElementById('td');
+  if(rem<=w2){td.className='tdisplay r';pf.style.background='var(--red2)';if(running)document.getElementById('ti').textContent='⚠ Wrap up NOW';}
+  else if(rem<=w1){td.className='tdisplay y';pf.style.background='var(--yellow2)';if(running)document.getElementById('ti').textContent='⚡ Begin wrapping up';}
+  else{td.className='tdisplay';pf.style.background='var(--green2)';if(running)document.getElementById('ti').textContent='Running...';}
+}
+</script>
+</body>
+</html>
